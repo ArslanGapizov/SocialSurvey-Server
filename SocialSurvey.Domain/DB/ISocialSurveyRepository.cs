@@ -9,5 +9,6 @@ namespace SocialSurvey.Domain.DB
     public interface ISocialSurveyRepository : IDisposable
     {
         IQueryable<Survey> GetSurveys();
+        IQueryable<User> GetUsers();
     }
 }

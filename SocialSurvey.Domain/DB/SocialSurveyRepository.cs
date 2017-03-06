@@ -29,5 +29,10 @@ namespace SocialSurvey.Domain.DB
 
             return query;
         }
+        public IQueryable<User> GetUsers()
+        {
+            var query = _dbContext.Users;
+            return query;
+        }
     }
 }
