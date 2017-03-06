@@ -40,7 +40,9 @@ namespace SocialSurvey.Server
             services.AddApplicationInsightsTelemetry(Configuration);
 
             services.AddMvc();
-            
+
+            services.AddScoped<ISocialSurveyRepository, SocialSurveyRepository>();
+
             services.AddDbContext<SocialSurveyContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Server")));
             
         }

@@ -12,16 +12,26 @@ namespace SocialSurvey.Server.Controllers
     [Route("api/[controller]")]
     public class SurveysController : Controller
     {
-        SocialSurveyContext _ctx;
-        public SurveysController(SocialSurveyContext context)
+        private ISocialSurveyRepository _repo;
+        public SurveysController(ISocialSurveyRepository repository)
         {
-            _ctx = context;
+            _repo = repository;
         }
-        // GET api/values
-        [HttpGet]
-        public async Task<IActionResult> Get()
+
+        protected override void Dispose(bool disposing)
         {
-            var surveys = await _ctx.Surveys.ToArrayAsync();
+            if (_repo != null)
+            {
+                _repo.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        // GET api/surveys
+        [HttpGet]
+        public IActionResult Get()
+        {
+            var surveys = _repo.GetSurveys();
 
             var response = surveys.Select(s => new
             {
