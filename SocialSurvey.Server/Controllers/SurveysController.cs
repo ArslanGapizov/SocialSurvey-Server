@@ -6,23 +6,24 @@ using Microsoft.AspNetCore.Mvc;
 using SocialSurvey.Domain.DB;
 using SocialSurvey.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using SocialSurvey.Domain.Interfaces;
 
 namespace SocialSurvey.Server.Controllers
 {
     [Route("api/[controller]")]
     public class SurveysController : Controller
     {
-        private ISocialSurveyRepository _repo;
-        public SurveysController(ISocialSurveyRepository repository)
+        IUnitOfWork _uow;
+        public SurveysController(IUnitOfWork unitOfWork)
         {
-            _repo = repository;
+            _uow = unitOfWork;
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (_repo != null)
+            if (disposing)
             {
-                _repo.Dispose();
+                _uow.Dispose();
             }
             base.Dispose(disposing);
         }
@@ -31,7 +32,7 @@ namespace SocialSurvey.Server.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            var surveys = _repo.GetSurveys();
+            var surveys = _ctx.Surveys;
 
             var response = surveys.Select(s => new
             {

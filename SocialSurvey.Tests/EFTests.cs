@@ -187,46 +187,7 @@ namespace SocialSurvey.Tests
             }
         }
         #endregion
-
-        [Test]
-        public void Can_Get_Users()
-        {
-            var connection = new SqliteConnection("DataSource=:memory:");
-            connection.Open();
-
-            try
-            {
-                var options = new DbContextOptionsBuilder<SocialSurveyContext>()
-                    .UseSqlite(connection)
-                    .Options;
-
-                using (var context = new SocialSurveyContext(options))
-                {
-                    context.Database.EnsureCreated();
-                }
-
-                User[] users = GenerateUsers("name");
-                using (var context = new SocialSurveyContext(options))
-                {
-                    foreach (var user in users)
-                    {
-                        context.Users.Add(user);
-                    }
-                    context.SaveChanges();
-                }
-                using (var repository = new SocialSurveyRepository(new SocialSurveyContext(options)))
-                {
-                    var result = repository.GetUsers();
-
-                    Assert.AreEqual(3, result.Count());
-                }
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
-
+        
         [Test]
         public void Can_Find_Users()
         {
