@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using SocialSurvey.Domain.Interfaces;
 using SocialSurvey.Server.DTO;
 using SocialSurvey.Server.Responses;
+using System.Diagnostics;
 
 namespace SocialSurvey.Server.Controllers
 {
@@ -55,42 +56,71 @@ namespace SocialSurvey.Server.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var survey = _uow.Surveys;
+            var survey = _uow.Surveys.Get(id);
 
+            //var response = new SingleResponse<Survey>();
             var response = new SingleResponse<SurveyDTO>();
-
             response.Link = ControllerContext.HttpContext.Request.PathBase;
             response.Message = "This method is under development";
+            //response.Response = new SurveyDTO
+            //{
+            //    SurveyId = 2,
+            //    Name = "Test2",
+            //    Comment = "For testing",
+            //    UserId = 3,
+            //    Questions = new List<QuestionDTO>()
+            //};
+            //for (int i = 0; i < 20; i++)
+            //{
+            //    var question = new QuestionDTO
+            //    {
+            //        Text = "Question" + i,
+            //        QuestionId = i + 56,
+            //        Order = i,
+            //        QuestionType = QuestionType.Select,
+            //        Options = new List<OptionDTO>()
+            //    };
+            //    for (int q = 0; q < 4; q++)
+            //    {
+
+            //        question.Options.Add(new OptionDTO
+            //        {
+            //            Text = question.Text + "option" + i,
+            //            OptionId = (i+56)*(q+1),
+            //            Order = q
+            //        });
+            //    }
+            //    response.Response.Questions.Add(question);
+
+            //}
             response.Response = new SurveyDTO
             {
-                SurveyId = 2,
-                Name = "Test2",
-                Comment = "For testing",
-                UserId = 3,
+                SurveyId = survey.SurveyId,
+                Name = survey.Name,
+                Comment = survey.Comment,
+                UserId = survey.UserId,
                 Questions = new List<QuestionDTO>()
             };
-            for (int i = 0; i < 20; i++)
+            foreach (var q in survey.Questions)
             {
                 var question = new QuestionDTO
                 {
-                    Text = "Question" + i,
-                    QuestionId = i + 56,
-                    Order = i,
-                    QuestionType = QuestionType.Select,
+                    Text = q.Text,
+                    QuestionId = q.QuestionId,
+                    Order = q.Order,
+                    QuestionType = q.QuestionType,
                     Options = new List<OptionDTO>()
                 };
-                for (int q = 0; q < 4; q++)
+                foreach(var o in q.Options)
                 {
-
                     question.Options.Add(new OptionDTO
                     {
-                        Text = question.Text + "option" + i,
-                        OptionId = (i+56)*(q+1),
-                        Order = q
+                        Text = o.Text,
+                        Order = o.Order,
+                        OptionId = o.OptionId
                     });
                 }
                 response.Response.Questions.Add(question);
-
             }
             return Ok(response);
         }

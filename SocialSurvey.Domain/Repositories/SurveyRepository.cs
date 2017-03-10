@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SocialSurvey.Domain.Interfaces;
 using SocialSurvey.Domain.Entities;
 using SocialSurvey.Domain.DB;
+using Microsoft.EntityFrameworkCore;
 
 namespace SocialSurvey.Domain.Repositories
 {
@@ -33,7 +34,11 @@ namespace SocialSurvey.Domain.Repositories
 
         public Survey Get(int id)
         {
-            throw new NotImplementedException();
+            return _ctx.Surveys
+                .Include(s => s.Questions)
+                .ThenInclude(q => q.Options)
+                .SingleOrDefault(s => s.SurveyId == id);
+            //throw new NotImplementedException();
         }
 
         public IEnumerable<Survey> GetAll()

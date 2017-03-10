@@ -45,6 +45,7 @@ namespace SocialSurvey.Server
             
 
             services.AddDbContext<SocialSurveyContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Server")));
+            
 
             services.AddTransient<IUnitOfWork, SocialSurveyUOW>();
         }
@@ -60,6 +61,9 @@ namespace SocialSurvey.Server
             app.UseApplicationInsightsExceptionTelemetry();
 
             app.UseMvc();
+
+
+            DBContextSeedData.Seed(app);
         }
     }
 }
