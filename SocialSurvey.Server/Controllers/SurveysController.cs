@@ -7,6 +7,8 @@ using SocialSurvey.Domain.DB;
 using SocialSurvey.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using SocialSurvey.Domain.Interfaces;
+using SocialSurvey.Server.DTO;
+using SocialSurvey.Server.Responses;
 
 namespace SocialSurvey.Server.Controllers
 {
@@ -32,28 +34,65 @@ namespace SocialSurvey.Server.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            var surveys = _ctx.Surveys;
+            var surveys = _uow.Surveys;
 
-            var response = surveys.Select(s => new
+            var response = new ListResponse<SurveyDTO>();
+
+            response.Href = ControllerContext.HttpContext.Request.PathBase;
+            response.Message = "This method is under development";
+            response.Response = new List<SurveyDTO>
             {
-                meta = new
-                {
-                    href = Request.Path.ToString()
-                },
-                surveyId = s.SurveyId,
-                userId = s.UserId,
-                name = s.Name,
-                comment = s.Comment
-            });
-
+                new SurveyDTO { SurveyId = 1, Name = "Test1", Comment = "For testing", UserId = 1 },
+                new SurveyDTO { SurveyId = 2, Name = "Test2", Comment = "For testing", UserId = 1 },
+                new SurveyDTO { SurveyId = 3, Name = "Test3", Comment = "For testing", UserId = 2 },
+                new SurveyDTO { SurveyId = 4, Name = "Test4", Comment = "For testing", UserId = 1 },
+                new SurveyDTO { SurveyId = 5, Name = "Test5", Comment = "For testing", UserId = 3 },
+            };
             return Ok(response);
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult Get(int id)
         {
-            return "value";
+            var survey = _uow.Surveys;
+
+            var response = new SingleResponse<SurveyDTO>();
+
+            response.Href = ControllerContext.HttpContext.Request.PathBase;
+            response.Message = "This method is under development";
+            response.Response = new SurveyDTO
+            {
+                SurveyId = 2,
+                Name = "Test2",
+                Comment = "For testing",
+                UserId = 3,
+                Questions = new List<QuestionDTO>()
+            };
+            for (int i = 0; i < 20; i++)
+            {
+                var question = new QuestionDTO
+                {
+                    Text = "Question" + i,
+                    QuestionId = i + 56,
+                    Order = i,
+                    QuestionType = QuestionType.Select,
+                    Options = new List<OptionDTO>()
+                };
+                for (int q = 0; q < 4; q++)
+                {
+
+                    question.Options.Add(new OptionDTO
+                    {
+                        Text = question.Text + "option" + i,
+                        OptionId = (i+56)*(q+1),
+                        Order = q
+                    });
+                }
+                response.Response.Questions.Add(question);
+
+            }
+            return Ok(response);
         }
 
         // POST api/values

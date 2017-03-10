@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SocialSurvey.Domain.DB;
 using Microsoft.EntityFrameworkCore;
+using SocialSurvey.Domain.Interfaces;
+using SocialSurvey.Domain.Repositories;
 
 namespace SocialSurvey.Server
 {
@@ -43,7 +45,8 @@ namespace SocialSurvey.Server
             
 
             services.AddDbContext<SocialSurveyContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Server")));
-            
+
+            services.AddTransient<IUnitOfWork, SocialSurveyUOW>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
