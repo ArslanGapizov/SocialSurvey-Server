@@ -11,7 +11,11 @@
     "NUnit": "3.4.0",
     "dotnet-test-nunit": "3.4.0-beta-1",
     "Microsoft.Data.Sqlite": "1.0.0",
-    "Microsoft.EntityFrameworkCore.Sqlite": "1.0.0"
+    "Microsoft.EntityFrameworkCore.Sqlite": "1.0.0",
+    "Microsoft.NETCore.App": {
+      "version": "1.0.0",
+      "type": "platform"
+    }
   },
     "testRunner": "nunit",
 
@@ -20,13 +24,7 @@
           "imports": [
             "dotnet5.6",
             "portable-net45+win8"
-          ],
-          "dependencies": {
-            "Microsoft.NETCore.App": {
-              "version": "1.0.0-*",
-              "type": "platform"
-            }
-          }
+          ]
         }
     }
 }

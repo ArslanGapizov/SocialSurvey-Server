@@ -12,8 +12,8 @@ namespace SocialSurvey.Domain.DB
     {
         public SocialSurveyContext(DbContextOptions<SocialSurveyContext> options) : base(options)
         {
-            Database.EnsureDeleted();
-            Database.EnsureCreated();
+            //Database.EnsureDeleted();
+            //Database.EnsureCreated();
         }
 
         public DbSet<User> Users { get; set; }
