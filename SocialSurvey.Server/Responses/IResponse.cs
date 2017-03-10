@@ -7,7 +7,7 @@ namespace SocialSurvey.Server.Responses
 {
     interface IResponse
     {
-        string Href { get; set; }
+        string Link { get; set; }
         string Message { get; set; }
     }
 }

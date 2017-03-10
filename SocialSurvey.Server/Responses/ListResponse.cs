@@ -7,7 +7,7 @@ namespace SocialSurvey.Server.Responses
 {
     public class ListResponse<T> : IListResponse<T>
     {
-        public string Href { get; set; }
+        public string Link { get; set; }
         public string Message { get; set; }
         public IEnumerable<T> Response { get; set; }
     }

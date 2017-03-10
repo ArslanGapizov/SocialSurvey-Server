@@ -38,7 +38,7 @@ namespace SocialSurvey.Server.Controllers
 
             var response = new ListResponse<SurveyDTO>();
 
-            response.Href = ControllerContext.HttpContext.Request.PathBase;
+            response.Link = ControllerContext.HttpContext.Request.PathBase;
             response.Message = "This method is under development";
             response.Response = new List<SurveyDTO>
             {
@@ -59,7 +59,7 @@ namespace SocialSurvey.Server.Controllers
 
             var response = new SingleResponse<SurveyDTO>();
 
-            response.Href = ControllerContext.HttpContext.Request.PathBase;
+            response.Link = ControllerContext.HttpContext.Request.PathBase;
             response.Message = "This method is under development";
             response.Response = new SurveyDTO
             {
