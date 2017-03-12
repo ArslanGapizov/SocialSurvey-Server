@@ -10,6 +10,7 @@ using SocialSurvey.Domain.Interfaces;
 using SocialSurvey.Server.DTO;
 using SocialSurvey.Server.Responses;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace SocialSurvey.Server.Controllers
 {
@@ -60,7 +61,8 @@ namespace SocialSurvey.Server.Controllers
 
             //var response = new SingleResponse<Survey>();
             var response = new SingleResponse<SurveyDTO>();
-            response.Link = ControllerContext.HttpContext.Request.PathBase;
+            response.Link = Request.GetDisplayUrl();
+            response.Method = Request.Method;
             response.Message = "This method is under development";
             //response.Response = new SurveyDTO
             //{

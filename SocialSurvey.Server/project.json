@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "Microsoft.AspNetCore.Authentication.JwtBearer": "1.0.0",
+    "Microsoft.AspNetCore.StaticFiles": "1.0.0",
     "SocialSurvey.Domain": "1.0.0-*",
     "Microsoft.Extensions.Logging": "1.1.1",
     "Microsoft.ApplicationInsights.AspNetCore": "2.0.0",

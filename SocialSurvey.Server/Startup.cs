@@ -11,6 +11,8 @@ using SocialSurvey.Domain.DB;
 using Microsoft.EntityFrameworkCore;
 using SocialSurvey.Domain.Interfaces;
 using SocialSurvey.Domain.Repositories;
+using Microsoft.IdentityModel.Tokens;
+using SocialSurvey.Server.Auth;
 
 namespace SocialSurvey.Server
 {
@@ -64,6 +66,24 @@ namespace SocialSurvey.Server
 
 
             DBContextSeedData.Seed(app);
+            
+
+            app.UseJwtBearerAuthentication(new JwtBearerOptions
+            {
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true,
+                TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = AuthOptions.ISSUER,
+                    ValidateAudience = true,
+                    ValidAudience = AuthOptions.AUDIENCE,
+                    ValidateLifetime = true,
+                    IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+                    ValidateIssuerSigningKey = true,
+                    
+                }
+            });
         }
     }
 }
