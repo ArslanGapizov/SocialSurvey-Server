@@ -44,7 +44,7 @@ namespace SocialSurvey.Domain.Repositories
 
         public void Update(User entity)
         {
-            throw new NotImplementedException();
+            _ctx.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
     }
 }

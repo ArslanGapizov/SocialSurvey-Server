@@ -13,6 +13,7 @@ using SocialSurvey.Domain.Interfaces;
 using SocialSurvey.Domain.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using SocialSurvey.Server.Auth;
+using SocialSurvey.Server.SeedData;
 
 namespace SocialSurvey.Server
 {
@@ -58,15 +59,12 @@ namespace SocialSurvey.Server
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            app.UseApplicationInsightsRequestTelemetry();
+            //app.UseApplicationInsightsRequestTelemetry();
 
-            app.UseApplicationInsightsExceptionTelemetry();
-
-            app.UseMvc();
-
-
-            DBContextSeedData.Seed(app);
+            //app.UseApplicationInsightsExceptionTelemetry();
             
+            DBContextSeedData.Seed(app);
+
 
             app.UseJwtBearerAuthentication(new JwtBearerOptions
             {
@@ -74,16 +72,29 @@ namespace SocialSurvey.Server
                 AutomaticChallenge = true,
                 TokenValidationParameters = new TokenValidationParameters
                 {
+                    // укзывает, будет ли валидироваться издатель при валидации токена
                     ValidateIssuer = true,
+                    // строка, представляющая издателя
                     ValidIssuer = AuthOptions.ISSUER,
+
+                    // будет ли валидироваться потребитель токена
                     ValidateAudience = true,
+                    // установка потребителя токена
                     ValidAudience = AuthOptions.AUDIENCE,
+                    // будет ли валидироваться время существования
                     ValidateLifetime = true,
+
+                    // установка ключа безопасности
                     IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+                    // валидация ключа безопасности
                     ValidateIssuerSigningKey = true,
-                    
+
+                    //ClockSkew = TimeSpan.Zero
                 }
             });
+
+
+            app.UseMvc();
         }
     }
 }

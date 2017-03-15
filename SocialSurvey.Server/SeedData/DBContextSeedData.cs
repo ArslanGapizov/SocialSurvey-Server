@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SocialSurvey.Domain.Entities;
+using SocialSurvey.Domain.DB;
+using SocialSurvey.Server.Auth;
 
-namespace SocialSurvey.Domain.DB
+namespace SocialSurvey.Server.SeedData
 {
     public class DBContextSeedData
     {
@@ -19,12 +21,12 @@ namespace SocialSurvey.Domain.DB
 
                 var user = new User
                 {
-                    FirstName = "Arslan",
-                    LastName = "Gapizov",
-                    Login = "AGN",
-                    Role = Role.Interviewer,
+                    FirstName = "AdminFirstName",
+                    LastName = "AdminLastName",
+                    Login = "Admin",
+                    Role = Role.Admin,
                     CreationDate = new DateTime(),
-
+                    PasswordHash = HashConverter.GetHash("qwerty")
                 };
 
                 var survey = new Survey

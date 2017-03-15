@@ -43,7 +43,7 @@ namespace SocialSurvey.Domain.Repositories
 
         public IEnumerable<Survey> GetAll()
         {
-            throw new NotImplementedException();
+            return _ctx.Surveys;
         }
 
         public void Update(Survey entity)

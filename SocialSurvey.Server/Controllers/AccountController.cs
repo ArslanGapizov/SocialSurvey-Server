@@ -11,6 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 using SocialSurvey.Domain.Interfaces;
 using SocialSurvey.Server.DTO;
 using SocialSurvey.Domain.Entities;
+using SocialSurvey.Server.Responses;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SocialSurvey.Server.Controllers
 {
@@ -23,7 +25,73 @@ namespace SocialSurvey.Server.Controllers
         {
             _uow = unitOfWork;
         }
-        
+        [Authorize]
+        [HttpGet]
+        public IActionResult Get()
+        {
+            User currentUser = _uow.Users.Find(x => x.Login == User.Identity.Name).FirstOrDefault();
+
+            SingleResponse<UserDTO> response = new SingleResponse<UserDTO>();
+            response.Link = Request.Path;
+            response.Message = "GET";
+            response.Message = "Method under development";
+            response.Response = new UserDTO
+            {
+                UserId = currentUser.UserId,
+                Login = currentUser.Login,
+                FirstName = currentUser.FirstName,
+                LastName = currentUser.LastName,
+                MiddleName = currentUser.MiddleName,
+            };
+
+            return Ok(response);
+        }
+        [Authorize]
+        [HttpPut]
+        public IActionResult Put([FromBody] UserDTO user)
+        {
+            User currentUser = _uow.Users.Find(x => x.Login == User.Identity.Name).FirstOrDefault();
+
+            if (!string.IsNullOrEmpty(user.FirstName))
+                currentUser.FirstName = user.FirstName;
+            if (!string.IsNullOrEmpty(user.LastName))
+                currentUser.LastName = user.LastName;
+            if (!string.IsNullOrEmpty(user.MiddleName))
+                currentUser.MiddleName = user.MiddleName;
+
+            _uow.Users.Update(currentUser);
+            _uow.Save();
+            
+            return Ok("Succeeded");
+        }
+        [Authorize]
+        [HttpPut("/api/account/password")]
+        public IActionResult Put()
+        {
+            var oldPassword = Request.Form["oldPassword"];
+            var password = Request.Form["password"];
+            var passwordConfirm = Request.Form["passwordConfirm"];
+
+            if (password != passwordConfirm)
+                return BadRequest("Passwords do not match");
+
+            var hashedOld = HashConverter.GetHash(oldPassword);
+
+
+            User currentUser = _uow.Users.
+                Find(x => x.Login == User.Identity.Name && 
+                          x.PasswordHash == hashedOld)
+                .FirstOrDefault();
+
+            if (currentUser == null)
+                return BadRequest("Wrong password");
+
+            currentUser.PasswordHash = HashConverter.GetHash(password);
+            _uow.Users.Update(currentUser);
+            _uow.Save();
+
+            return Ok("Succeeded");
+        }
         /// <summary>
         /// Action for getting token for request form`s login and password
         /// </summary>

@@ -11,6 +11,7 @@ using SocialSurvey.Server.DTO;
 using SocialSurvey.Server.Responses;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SocialSurvey.Server.Controllers
 {
@@ -33,27 +34,26 @@ namespace SocialSurvey.Server.Controllers
         }
 
         // GET api/surveys
+        [Authorize]
         [HttpGet]
         public IActionResult Get()
         {
-            var surveys = _uow.Surveys;
-
             var response = new ListResponse<SurveyDTO>();
 
             response.Link = ControllerContext.HttpContext.Request.PathBase;
             response.Message = "This method is under development";
-            response.Response = new List<SurveyDTO>
-            {
-                new SurveyDTO { SurveyId = 1, Name = "Test1", Comment = "For testing", UserId = 1 },
-                new SurveyDTO { SurveyId = 2, Name = "Test2", Comment = "For testing", UserId = 1 },
-                new SurveyDTO { SurveyId = 3, Name = "Test3", Comment = "For testing", UserId = 2 },
-                new SurveyDTO { SurveyId = 4, Name = "Test4", Comment = "For testing", UserId = 1 },
-                new SurveyDTO { SurveyId = 5, Name = "Test5", Comment = "For testing", UserId = 3 },
-            };
+            var surveys = _uow.Surveys.GetAll();
+            IEnumerable<SurveyDTO> responseList = surveys.Select(s => new SurveyDTO { SurveyId = s.SurveyId,
+                                                                                      Name = s.Name,
+                                                                                      Comment = s.Comment,
+                                                                                      UserId = s.UserId});
+            response.Response = responseList;
+
             return Ok(response);
         }
 
         // GET api/values/5
+        [Authorize]
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
@@ -64,37 +64,7 @@ namespace SocialSurvey.Server.Controllers
             response.Link = Request.GetDisplayUrl();
             response.Method = Request.Method;
             response.Message = "This method is under development";
-            //response.Response = new SurveyDTO
-            //{
-            //    SurveyId = 2,
-            //    Name = "Test2",
-            //    Comment = "For testing",
-            //    UserId = 3,
-            //    Questions = new List<QuestionDTO>()
-            //};
-            //for (int i = 0; i < 20; i++)
-            //{
-            //    var question = new QuestionDTO
-            //    {
-            //        Text = "Question" + i,
-            //        QuestionId = i + 56,
-            //        Order = i,
-            //        QuestionType = QuestionType.Select,
-            //        Options = new List<OptionDTO>()
-            //    };
-            //    for (int q = 0; q < 4; q++)
-            //    {
 
-            //        question.Options.Add(new OptionDTO
-            //        {
-            //            Text = question.Text + "option" + i,
-            //            OptionId = (i+56)*(q+1),
-            //            Order = q
-            //        });
-            //    }
-            //    response.Response.Questions.Add(question);
-
-            //}
             response.Response = new SurveyDTO
             {
                 SurveyId = survey.SurveyId,
@@ -128,18 +98,21 @@ namespace SocialSurvey.Server.Controllers
         }
 
         // POST api/values
+        [Authorize]
         [HttpPost]
         public void Post([FromBody]string value)
         {
         }
 
         // PUT api/values/5
+        [Authorize]
         [HttpPut("{id}")]
         public void Put(int id, [FromBody]string value)
         {
         }
 
         // DELETE api/values/5
+        [Authorize]
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
