@@ -23,8 +23,7 @@ namespace SocialSurvey.Server.Controllers
         {
             _uow = unitOfWork;
         }
-
-
+        
         /// <summary>
         /// Action for getting token for request form`s login and password
         /// </summary>
@@ -34,7 +33,8 @@ namespace SocialSurvey.Server.Controllers
             var login = Request.Form["login"];
             var password = Request.Form["password"];
 
-            var identity = GetIdentity(login, password);
+            var hashedPassword = HashConverter.GetHash(password);
+            var identity = GetIdentity(login, hashedPassword);
 
             if (identity == null)
             {
@@ -45,8 +45,7 @@ namespace SocialSurvey.Server.Controllers
 
             return Ok(response);
         }
-
-
+        
         /// <summary>
         /// Action for registation user, returns access token
         /// </summary>
@@ -58,8 +57,10 @@ namespace SocialSurvey.Server.Controllers
             if (registerData.Password != registerData.PasswordConfirm)
                 return BadRequest("Passwords do not match");
 
+
+            var hashedPassword = HashConverter.GetHash(registerData.Password);
             var result = CreateUser(login: registerData.Login,
-                                    password: registerData.Password,
+                                    password: hashedPassword,
                                     firstName: registerData.FirstName,
                                     lastName: registerData.LastName,
                                     middleName: registerData.MiddleName);
@@ -67,7 +68,7 @@ namespace SocialSurvey.Server.Controllers
             if (result)
             {
                 var identity = GetIdentity(registerData.Login,
-                                           registerData.Password);
+                                           hashedPassword);
                 var TokenResponse = GenerateToken(identity);
                 return Ok(TokenResponse);
             }
@@ -151,5 +152,6 @@ namespace SocialSurvey.Server.Controllers
 
             return null;
         }
+
     }
 }
