@@ -21,11 +21,8 @@ namespace SocialSurvey.Domain.DB
                 {
                     FirstName = "Arslan",
                     LastName = "Gapizov",
-                    UserName = "AGN",
+                    Login = "AGN",
                     Role = Role.Interviewer,
-                    Region = "region",
-                    Area = "area",
-                    Sector = "sector",
                     CreationDate = new DateTime(),
 
                 };

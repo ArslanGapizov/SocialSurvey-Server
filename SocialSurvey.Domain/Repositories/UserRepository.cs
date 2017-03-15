@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SocialSurvey.Domain.Interfaces;
 using SocialSurvey.Domain.Entities;
 using SocialSurvey.Domain.DB;
+using System.Linq.Expressions;
 
 namespace SocialSurvey.Domain.Repositories
 {
@@ -16,10 +17,9 @@ namespace SocialSurvey.Domain.Repositories
         {
             _ctx = context;
         }
-
         public void Create(User entity)
         {
-            throw new NotImplementedException();
+            _ctx.Users.Add(entity);
         }
 
         public void Delete(User entity)
@@ -29,12 +29,12 @@ namespace SocialSurvey.Domain.Repositories
 
         public IEnumerable<User> Find(Func<User, bool> predicate)
         {
-            throw new NotImplementedException();
+            return _ctx.Users.Where(predicate);
         }
 
         public User Get(int id)
         {
-            throw new NotImplementedException();
+            return _ctx.Users.Find(id);
         }
 
         public IEnumerable<User> GetAll()

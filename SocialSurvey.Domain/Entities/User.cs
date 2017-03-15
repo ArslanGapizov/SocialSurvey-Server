@@ -17,14 +17,12 @@ namespace SocialSurvey.Domain.Entities
     public class User
     {
         public int UserId { get; set; }
-        public string UserName { get; set; }
+        public string Login { get; set; }
+        public string PasswordHash { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string MiddleName { get; set; }
         public Role Role { get; set; }
-        public string Region { get; set; }
-        public string Area { get; set; }
-        public string Sector { get; set; }
         public DateTime CreationDate { get; set; }
 
         public List<Survey> Surveys { get; set; }

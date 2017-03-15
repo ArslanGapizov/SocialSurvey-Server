@@ -36,7 +36,7 @@ namespace SocialSurvey.Tests
                 //Run the test against one instance of the context
 
                 User user = GenerateUsers("name")[0];
-                string userName = user.UserName;
+                string userName = user.Login;
                 using (var context = new SocialSurveyContext(options))
                 {
                     context.Users.Add(user);
@@ -46,7 +46,7 @@ namespace SocialSurvey.Tests
                 using (var context = new SocialSurveyContext(options))
                 {
                     Assert.AreEqual(1, context.Users.Count());
-                    Assert.AreEqual(userName, context.Users.Single().UserName);
+                    Assert.AreEqual(userName, context.Users.Single().Login);
                     Assert.AreEqual(1, context.Users.Single().UserId);
                 }
             }
@@ -289,14 +289,11 @@ namespace SocialSurvey.Tests
             {
                 users[i] = new User()
                 {
-                    UserName = name + i,
+                    Login = name + i,
                     FirstName = "first" + name + i,
                     LastName = "last" + name + i,
                     MiddleName = "middle" + name + i,
-                    Area = "Area",
-                    Region = "Region",
                     Role = Role.Interviewer,
-                    Sector = "Sector",
                     CreationDate = new DateTime()
                 };
             }
@@ -309,7 +306,7 @@ namespace SocialSurvey.Tests
             {
                 surveys[i] = new Survey()
                 {
-                    Name = "survey" + i + user.UserName,
+                    Name = "survey" + i + user.Login,
                     Comment = "comment",
                     User = user
                 };

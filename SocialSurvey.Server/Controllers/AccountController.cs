@@ -9,36 +9,106 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using SocialSurvey.Domain.Interfaces;
+using SocialSurvey.Server.DTO;
+using SocialSurvey.Domain.Entities;
 
 namespace SocialSurvey.Server.Controllers
 {
+    [Route("api/[controller]")]
     public class AccountController : Controller
     {
         IUnitOfWork _uow;
-        private List<Person> people = new List<Person>
-        {
-            new Person { Login = "admin@gmail.com", Password = "12345", Role = "admin" },
-            new Person { Login = "qwerty", Password = "55555", Role = "user" }
-        };
 
         public AccountController(IUnitOfWork unitOfWork)
         {
             _uow = unitOfWork;
         }
 
+
+        /// <summary>
+        /// Action for getting token for request form`s login and password
+        /// </summary>
         [HttpPost("/token")]
         public IActionResult Token()
         {
-            var username = Request.Form["username"];
+            var login = Request.Form["login"];
             var password = Request.Form["password"];
 
-            var identity = GetIdentity(username, password);
+            var identity = GetIdentity(login, password);
 
             if (identity == null)
             {
-                return BadRequest("Invalid username or password.");
+                return BadRequest("Invalid login or password.");
             }
 
+            var response = GenerateToken(identity);
+
+            return Ok(response);
+        }
+
+
+        /// <summary>
+        /// Action for registation user, returns access token
+        /// </summary>
+        [HttpPost("/register")]
+        public IActionResult Register([FromBody] RegisterDTO registerData)
+        {
+            if (registerData == null)
+                return BadRequest("Data is null");
+            if (registerData.Password != registerData.PasswordConfirm)
+                return BadRequest("Passwords do not match");
+
+            var result = CreateUser(login: registerData.Login,
+                                    password: registerData.Password,
+                                    firstName: registerData.FirstName,
+                                    lastName: registerData.LastName,
+                                    middleName: registerData.MiddleName);
+
+            if (result)
+            {
+                var identity = GetIdentity(registerData.Login,
+                                           registerData.Password);
+                var TokenResponse = GenerateToken(identity);
+                return Ok(TokenResponse);
+            }
+            return BadRequest("Cannot create user");
+        }
+        private bool CreateUser(string login,
+                                string password,
+                                string firstName,
+                                string lastName,
+                                string middleName)
+        {
+            if (login == null ||
+               password == null)
+                return false;
+
+            try
+            {
+                _uow.Users.Create(new User
+                {
+                    Login = login,
+                    PasswordHash = password,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    MiddleName = middleName,
+                    Role = Role.Interviewer,
+                    CreationDate = new DateTime()
+                });
+                _uow.Save();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Method for generation token from identity
+        /// </summary>
+        private TokenDTO GenerateToken(ClaimsIdentity identity)
+        {
             var now = DateTime.UtcNow;
 
             var jwt = new JwtSecurityToken(
@@ -51,26 +121,27 @@ namespace SocialSurvey.Server.Controllers
                 );
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-            var response = new
+            return new TokenDTO
             {
-                access_token = encodedJwt,
-                username = identity.Name,
-                expires_in = (jwt.ValidTo - jwt.ValidFrom).TotalSeconds
+                AccessToken = encodedJwt,
+                Login = identity.Name,
+                ExpiresIn = (jwt.ValidTo - jwt.ValidFrom).TotalSeconds
             };
-
-            return Ok(response);
         }
 
-        private ClaimsIdentity GetIdentity(string username, string password)
+        /// <summary>
+        /// Gets user from db by login and password
+        /// </summary>
+        private ClaimsIdentity GetIdentity(string login, string password)
         {
-            Person person = people.FirstOrDefault(x => x.Login == username && x.Password == password);
+            User user = _uow.Users.Find(x => x.Login == login && x.PasswordHash == password).FirstOrDefault();
 
-            if (person != null)
+            if (user != null)
             {
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimsIdentity.DefaultNameClaimType, person.Login),
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, person.Role)
+                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login),
+                    new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.ToString())
                 };
 
                 ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
