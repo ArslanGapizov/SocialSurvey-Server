@@ -148,5 +148,30 @@ namespace SocialSurvey.Server.Controllers
         public void Delete(int id)
         {
         }
+        [Authorize]
+        [HttpGet("{id}/questions")]
+        public IActionResult GetQuestions(int id)
+        {
+            var survey = _uow.Surveys.Get(id);
+
+            if (survey == null)
+                return NotFound($"Survey with id-{id} is not exist");
+
+            var response = new ListResponse<QuestionDTO>();
+            response.Link = Request.GetDisplayUrl();
+            response.Method = Request.Method;
+            response.Message = "This method is under development";
+            response.Response = survey.Questions.Select(question =>
+            new QuestionDTO
+            {
+                Text = question.Text,
+                Order = question.Order,
+                QuestionType = question.QuestionType,
+                QuestionId = question.QuestionId,
+                SurveyId = question.SurveyId
+            }).ToList();
+
+            return Ok(response);
+        }
     }
 }
