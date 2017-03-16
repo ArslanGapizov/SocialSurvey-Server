@@ -13,6 +13,7 @@ using SocialSurvey.Server.DTO;
 using SocialSurvey.Domain.Entities;
 using SocialSurvey.Server.Responses;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace SocialSurvey.Server.Controllers
 {
@@ -32,7 +33,7 @@ namespace SocialSurvey.Server.Controllers
             User currentUser = _uow.Users.Find(x => x.Login == User.Identity.Name).FirstOrDefault();
 
             SingleResponse<UserDTO> response = new SingleResponse<UserDTO>();
-            response.Link = Request.Path;
+            response.Link = Request.GetDisplayUrl();
             response.Message = "GET";
             response.Message = "Method under development";
             response.Response = new UserDTO

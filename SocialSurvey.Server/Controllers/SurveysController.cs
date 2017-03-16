@@ -40,13 +40,16 @@ namespace SocialSurvey.Server.Controllers
         {
             var response = new ListResponse<SurveyDTO>();
 
-            response.Link = ControllerContext.HttpContext.Request.PathBase;
+            response.Link = Request.GetDisplayUrl();
             response.Message = "This method is under development";
             var surveys = _uow.Surveys.GetAll();
-            IEnumerable<SurveyDTO> responseList = surveys.Select(s => new SurveyDTO { SurveyId = s.SurveyId,
-                                                                                      Name = s.Name,
-                                                                                      Comment = s.Comment,
-                                                                                      UserId = s.UserId});
+            IEnumerable<SurveyDTO> responseList = surveys.Select(s => new SurveyDTO
+            {
+                SurveyId = s.SurveyId,
+                Name = s.Name,
+                Comment = s.Comment,
+                UserId = s.UserId
+            });
             response.Response = responseList;
 
             return Ok(response);
@@ -59,56 +62,84 @@ namespace SocialSurvey.Server.Controllers
         {
             var survey = _uow.Surveys.Get(id);
 
-            //var response = new SingleResponse<Survey>();
+            if (survey == null)
+                return NotFound($"Survey with id-{id} is not exist");
+
             var response = new SingleResponse<SurveyDTO>();
             response.Link = Request.GetDisplayUrl();
             response.Method = Request.Method;
             response.Message = "This method is under development";
-
+            
             response.Response = new SurveyDTO
             {
                 SurveyId = survey.SurveyId,
                 Name = survey.Name,
                 Comment = survey.Comment,
                 UserId = survey.UserId,
-                Questions = new List<QuestionDTO>()
+                Questions = survey
+                            .Questions
+                            .Select(question =>
+                            new QuestionDTO
+                            {
+                                QuestionId = question.QuestionId,
+                                Text = question.Text,
+                                Order = question.Order,
+                                QuestionType = question.QuestionType,
+                                Options = question.Options.Select(option =>
+                                    new OptionDTO
+                                    {
+                                        Text = option.Text,
+                                        OptionId = option.OptionId,
+                                        Order = option.Order
+                                    }
+                                ).ToList()
+                            }
+                ).ToList()
             };
-            foreach (var q in survey.Questions)
-            {
-                var question = new QuestionDTO
-                {
-                    Text = q.Text,
-                    QuestionId = q.QuestionId,
-                    Order = q.Order,
-                    QuestionType = q.QuestionType,
-                    Options = new List<OptionDTO>()
-                };
-                foreach(var o in q.Options)
-                {
-                    question.Options.Add(new OptionDTO
-                    {
-                        Text = o.Text,
-                        Order = o.Order,
-                        OptionId = o.OptionId
-                    });
-                }
-                response.Response.Questions.Add(question);
-            }
             return Ok(response);
         }
 
         // POST api/values
         [Authorize]
         [HttpPost]
-        public void Post([FromBody]string value)
+        public IActionResult Post([FromBody] SurveyDTO survey)
         {
+            User currentUser = _uow.Users.Find(x => x.Login == User.Identity.Name).FirstOrDefault();
+            if (currentUser == null)
+                return Unauthorized();
+
+            Survey entry = new Survey()
+            {
+                UserId = currentUser.UserId,
+                Name = survey.Name,
+                Comment = survey.Comment,
+                Questions = survey
+                            .Questions
+                            .Select(dtoQuestion => new Question
+                            {
+                                Text = dtoQuestion.Text,
+                                QuestionType = dtoQuestion.QuestionType,
+                                Order = dtoQuestion.Order,
+                                Options = dtoQuestion.Options.Select(dtoOption => new Option
+                                {
+                                    Text = dtoOption.Text,
+                                    Order = dtoOption.Order
+                                }).ToList()
+                            }).ToList()
+            };
+
+            _uow.Surveys.Create(entry);
+            _uow.Save();
+
+            return Ok($"Successful created, ID: {entry.SurveyId}");
         }
 
         // PUT api/values/5
         [Authorize]
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public void Put(int id, [FromBody] SurveyDTO value)
         {
+
         }
 
         // DELETE api/values/5

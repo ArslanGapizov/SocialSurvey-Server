@@ -19,7 +19,7 @@ namespace SocialSurvey.Domain.Repositories
         }
         public void Create(Survey entity)
         {
-            throw new NotImplementedException();
+            _ctx.Add(entity);
         }
 
         public void Delete(Survey entity)
@@ -38,7 +38,6 @@ namespace SocialSurvey.Domain.Repositories
                 .Include(s => s.Questions)
                 .ThenInclude(q => q.Options)
                 .SingleOrDefault(s => s.SurveyId == id);
-            //throw new NotImplementedException();
         }
 
         public IEnumerable<Survey> GetAll()
@@ -48,7 +47,7 @@ namespace SocialSurvey.Domain.Repositories
 
         public void Update(Survey entity)
         {
-            throw new NotImplementedException();
+            _ctx.Entry(entity).State = EntityState.Modified;
         }
     }
 }
