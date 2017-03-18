@@ -14,7 +14,7 @@ namespace SocialSurvey.Domain.Entities
         public string Comment { get; set; }
         public bool IsDeleted { get; set; }
 
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
         //Creator
         public User User { get; set; }
 

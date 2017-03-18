@@ -162,6 +162,7 @@ namespace SocialSurvey.Server.Controllers
 
             _uow.Surveys.Delete(id);
             _uow.Save();
+
             return Ok("Deleted successfully");
         }
 

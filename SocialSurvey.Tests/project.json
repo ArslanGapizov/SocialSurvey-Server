@@ -1,5 +1,5 @@
 ﻿{
-    "version": "1.1.0-*",
+  "version": "1.1.0-*",
 
   "dependencies": {
     "SocialSurvey.Domain": {
@@ -8,23 +8,24 @@
     "SocialSurvey.Server": {
       "target": "project"
     },
-    "NUnit": "3.4.0",
     "dotnet-test-nunit": "3.4.0-beta-1",
-    "Microsoft.Data.Sqlite": "1.0.0",
-    "Microsoft.EntityFrameworkCore.Sqlite": "1.0.0",
+    "Microsoft.Data.Sqlite": "1.1.0",
+    "Microsoft.EntityFrameworkCore.Sqlite": "1.1.1",
+    "NUnit": "3.6.1",
+    "Microsoft.DotNet.InternalAbstractions": "1.0.500-preview2-1-003177",
     "Microsoft.NETCore.App": {
       "version": "1.0.0",
       "type": "platform"
     }
   },
-    "testRunner": "nunit",
+  "testRunner": "nunit",
 
-    "frameworks": {
-        "netcoreapp1.0": {
-          "imports": [
-            "dotnet5.6",
-            "portable-net45+win8"
-          ]
-        }
+  "frameworks": {
+    "netcoreapp1.0": {
+      "imports": [
+        "dotnet5.6",
+        "portable-net45+win8"
+      ]
     }
+  }
 }

@@ -22,7 +22,7 @@ namespace SocialSurvey.Domain.Repositories
             _ctx.Options.Add(entity);
         }
 
-        public void Delete(int id)
+        public void Delete(int id, bool hard = true)
         {
             Option optionToDelete = Get(id);
             if (optionToDelete == null)
@@ -31,7 +31,7 @@ namespace SocialSurvey.Domain.Repositories
             _ctx.Entry(optionToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
 
-        public void Delete(Option entity)
+        public void Delete(Option entity, bool hard = true)
         {
             entity.IsDeleted = true;
             _ctx.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;

@@ -36,7 +36,7 @@ namespace SocialSurvey.Tests
 
                 //Run the test against one instance of the context
 
-                User user = GenerateUsers("name")[0];
+                User user = TestDataGenerator.GenerateUsers("name")[0];
                 string userName = user.Login;
                 using (var context = new SocialSurveyContext(options))
                 {
@@ -74,8 +74,8 @@ namespace SocialSurvey.Tests
                     context.Database.EnsureCreated();
                 }
 
-                User user = GenerateUsers("name")[0];
-                Survey survey = GenerateSurveys(user)[0];
+                User user = TestDataGenerator.GenerateUsers("name")[0];
+                Survey survey = TestDataGenerator.GenerateSurveys(user)[0];
                 string surveyName = survey.Name;
                 using (var context = new SocialSurveyContext(options))
                 {
@@ -118,9 +118,9 @@ namespace SocialSurvey.Tests
                 }
 
 
-                User user = GenerateUsers("name")[0];
-                Survey survey = GenerateSurveys(user)[0];
-                Question question = GenerateQuestions(survey)[0];
+                User user = TestDataGenerator.GenerateUsers("name")[0];
+                Survey survey = TestDataGenerator.GenerateSurveys(user)[0];
+                Question question = TestDataGenerator.GenerateQuestions(survey)[0];
                 string questionText = question.Text;
                 using (var context = new SocialSurveyContext(options))
                 {
@@ -160,10 +160,10 @@ namespace SocialSurvey.Tests
                     context.Database.EnsureCreated();
                 }
 
-                User user = GenerateUsers("name")[0];
-                Survey survey = GenerateSurveys(user)[0];
-                Question question = GenerateQuestions(survey)[0];
-                Option option = GenerateOptions(question)[0];
+                User user = TestDataGenerator.GenerateUsers("name")[0];
+                Survey survey = TestDataGenerator.GenerateSurveys(user)[0];
+                Question question = TestDataGenerator.GenerateQuestions(survey)[0];
+                Option option = TestDataGenerator.GenerateOptions(question)[0];
                 string optionText = option.Text;
                 using (var context = new SocialSurveyContext(options))
                 {
@@ -186,162 +186,6 @@ namespace SocialSurvey.Tests
             {
                 connection.Close();
             }
-        }
-        #endregion
-        
-        [Test]
-        public void Can_Add_Users_in_repository()
-        {
-            var connection = new SqliteConnection("DataSource=:memory:");
-            connection.Open();
-
-            try
-            {
-                var options = new DbContextOptionsBuilder<SocialSurveyContext>()
-                    .UseSqlite(connection)
-                    .Options;
-
-                using (var context = new SocialSurveyContext(options))
-                {
-                    context.Database.EnsureCreated();
-                }
-
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
-        [Test]
-        public void Can_Find_Surveys()
-        {
-            var connection = new SqliteConnection("DataSource=:memory:");
-            connection.Open();
-
-            try
-            {
-                var options = new DbContextOptionsBuilder<SocialSurveyContext>()
-                    .UseSqlite(connection)
-                    .Options;
-
-                using (var context = new SocialSurveyContext(options))
-                {
-                    context.Database.EnsureCreated();
-                }
-
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
-        [Test]
-        public void Can_Find_Questions()
-        {
-            var connection = new SqliteConnection("DataSource=:memory:");
-            connection.Open();
-
-            try
-            {
-                var options = new DbContextOptionsBuilder<SocialSurveyContext>()
-                    .UseSqlite(connection)
-                    .Options;
-
-                using (var context = new SocialSurveyContext(options))
-                {
-                    context.Database.EnsureCreated();
-                }
-
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
-        [Test]
-        public void Can_Find_Options()
-        {
-            var connection = new SqliteConnection("DataSource=:memory:");
-            connection.Open();
-
-            try
-            {
-                var options = new DbContextOptionsBuilder<SocialSurveyContext>()
-                    .UseSqlite(connection)
-                    .Options;
-
-                using (var context = new SocialSurveyContext(options))
-                {
-                    context.Database.EnsureCreated();
-                }
-
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
-
-        #region Methods for generate entities
-        private User[] GenerateUsers(string name)
-        {
-            User[] users = new User[3];
-            for (var i = 0; i < users.Length; i++)
-            {
-                users[i] = new User()
-                {
-                    Login = name + i,
-                    FirstName = "first" + name + i,
-                    LastName = "last" + name + i,
-                    MiddleName = "middle" + name + i,
-                    Role = Role.Interviewer,
-                    CreationDate = new DateTime()
-                };
-            }
-            return users;
-        }
-        private Survey[] GenerateSurveys(User user)
-        {
-            Survey[] surveys = new Survey[3];
-            for (int i = 0; i < surveys.Length; i++)
-            {
-                surveys[i] = new Survey()
-                {
-                    Name = "survey" + i + user.Login,
-                    Comment = "comment",
-                    User = user
-                };
-            }
-            return surveys;
-        }
-        private Question[] GenerateQuestions(Survey survey)
-        {
-            Question[] questions = new Question[3];
-            for (int i = 0; i < questions.Length; i++)
-            {
-                questions[i] = new Question()
-                {
-                    Text = "question" + i + survey.Name,
-                    QuestionType = QuestionType.Select,
-                    Order = i,
-                    Survey = survey
-                };
-            }
-            return questions;
-        }
-        private Option[] GenerateOptions(Question question)
-        {
-            Option[] options = new Option[3];
-            for (int i = 0; i < options.Length; i++)
-            {
-                options[i] = new Option()
-                {
-                    Text = "option" + i + question.Text,
-                    Order = i,
-                    Question = question
-                };
-            }
-            return options;
         }
         #endregion
     }

@@ -22,10 +22,35 @@ namespace SocialSurvey.Domain.Repositories
             _ctx.Users.Add(entity);
         }
 
-        public void Delete(User entity)
+        public void Delete(int id, bool hard = false)
         {
-            entity.IsDeleted = true;
-            _ctx.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            User userToDelete = Get(id);
+
+            if (userToDelete == null)
+                throw new ArgumentOutOfRangeException($"There are no user with id {id}");
+
+            if (hard)
+            {
+                _ctx.Users.Remove(userToDelete);
+            }
+            else
+            {
+                userToDelete.IsDeleted = true;
+                _ctx.Entry(userToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            }
+        }
+
+        public void Delete(User entity, bool hard = false)
+        {
+            if (hard)
+            {
+                _ctx.Users.Remove(entity);
+            }
+            else
+            {
+                entity.IsDeleted = true;
+                _ctx.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            }
         }
 
         public IEnumerable<User> Find(Func<User, bool> predicate)
@@ -41,6 +66,17 @@ namespace SocialSurvey.Domain.Repositories
         public IEnumerable<User> GetAll()
         {
             return _ctx.Users;
+        }
+
+        public void Restore(int id)
+        {
+            User userToDelete = Get(id);
+
+            if (userToDelete == null)
+                throw new ArgumentOutOfRangeException($"There are no user with id {id}");
+
+            userToDelete.IsDeleted = false;
+            _ctx.Entry(userToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
 
         public void Restore(User entity)

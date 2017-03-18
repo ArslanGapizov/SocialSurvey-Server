@@ -23,7 +23,7 @@ namespace SocialSurvey.Domain.Repositories
             _ctx.Questions.Add(entity);
         }
 
-        public void Delete(int id)
+        public void Delete(int id, bool hard = false)
         {
             Question questionToDelete = Get(id);
             if (questionToDelete == null)
@@ -36,7 +36,7 @@ namespace SocialSurvey.Domain.Repositories
             _ctx.Entry(questionToDelete).State = EntityState.Modified;
         }
 
-        public void Delete(Question entity)
+        public void Delete(Question entity, bool hard = false)
         {
             entity.IsDeleted = true;
             if (entity.Options != null)

@@ -12,7 +12,7 @@ namespace SocialSurvey.Server.DTO
         public string Name { get; set; }
         public string Comment { get; set; }
 
-        public int UserId{ get; set; }
+        public int? UserId{ get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public List<QuestionDTO> Questions { get; set; }
         public SurveyDTO()

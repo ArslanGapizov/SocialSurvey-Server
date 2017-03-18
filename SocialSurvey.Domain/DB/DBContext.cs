@@ -29,7 +29,8 @@ namespace SocialSurvey.Domain.DB
                 .Property(u => u.UserId)
                 .ValueGeneratedOnAdd();
             modelBuilder.Entity<User>()
-                .HasAlternateKey(u => u.Login);
+                .HasIndex(u => u.Login)
+                .IsUnique();
 
             //Survey Table
             modelBuilder.Entity<Survey>()

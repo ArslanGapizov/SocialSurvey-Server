@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<test-run id="0" testcasecount="8" result="Failed" total="8" passed="7" failed="1" inconclusive="0" skipped="0" asserts="16" portable-engine-version="3.3.0.0" start-time="2017-03-18 15:09:36Z" end-time="2017-03-18 15:09:39Z" duration="3.712021">
+  <test-suite type="Assembly" id="1009" name="SocialSurvey.Tests.dll" fullname="D:/develop/SocialSurvey/SocialSurvey.Tests/bin/Debug/netcoreapp1.0/SocialSurvey.Tests.dll" runstate="Runnable" testcasecount="8" result="Failed" site="Child" start-time="2017-03-18 15:09:36Z" end-time="2017-03-18 15:09:39Z" duration="3.066704" total="8" passed="7" failed="1" warnings="0" inconclusive="0" skipped="0" asserts="16">
+    <environment framework-version="3.6.1.0" clr-version=".NET Core 4.6.24214.01" os-version="Microsoft Windows 10.0.14393 " cwd="D:\develop\SocialSurvey" machine-name="DESKTOP-HUR3UD1" culture="en-US" uiculture="en-US" os-architecture="X64" />
+    <settings>
+      <setting name="WorkDirectory" value="D:\develop\SocialSurvey" />
+    </settings>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="TestSuite" id="1010" name="SocialSurvey" fullname="SocialSurvey" runstate="Runnable" testcasecount="8" result="Failed" site="Child" start-time="2017-03-18 15:09:36Z" end-time="2017-03-18 15:09:39Z" duration="3.057129" total="8" passed="7" failed="1" warnings="0" inconclusive="0" skipped="0" asserts="16">
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1011" name="Tests" fullname="SocialSurvey.Tests" runstate="Runnable" testcasecount="8" result="Failed" site="Child" start-time="2017-03-18 15:09:36Z" end-time="2017-03-18 15:09:39Z" duration="3.056836" total="8" passed="7" failed="1" warnings="0" inconclusive="0" skipped="0" asserts="16">
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestFixture" id="1000" name="EFTests" fullname="SocialSurvey.Tests.EFTests" classname="SocialSurvey.Tests.EFTests" runstate="Runnable" testcasecount="8" result="Failed" site="Child" start-time="2017-03-18 15:09:36Z" end-time="2017-03-18 15:09:39Z" duration="3.053997" total="8" passed="7" failed="1" warnings="0" inconclusive="0" skipped="0" asserts="16">
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-case id="1004" name="Can_Add_Option" fullname="SocialSurvey.Tests.EFTests.Can_Add_Option" methodname="Can_Add_Option" classname="SocialSurvey.Tests.EFTests" runstate="Runnable" seed="1467013928" result="Passed" start-time="2017-03-18 15:09:36Z" end-time="2017-03-18 15:09:39Z" duration="2.644730" asserts="4" />
+          <test-case id="1003" name="Can_Add_Question" fullname="SocialSurvey.Tests.EFTests.Can_Add_Question" methodname="Can_Add_Question" classname="SocialSurvey.Tests.EFTests" runstate="Runnable" seed="2076950959" result="Passed" start-time="2017-03-18 15:09:39Z" end-time="2017-03-18 15:09:39Z" duration="0.023047" asserts="4" />
+          <test-case id="1002" name="Can_Add_Survey" fullname="SocialSurvey.Tests.EFTests.Can_Add_Survey" methodname="Can_Add_Survey" classname="SocialSurvey.Tests.EFTests" runstate="Runnable" seed="446905366" result="Passed" start-time="2017-03-18 15:09:39Z" end-time="2017-03-18 15:09:39Z" duration="0.011387" asserts="4" />
+          <test-case id="1001" name="Can_Add_User" fullname="SocialSurvey.Tests.EFTests.Can_Add_User" methodname="Can_Add_User" classname="SocialSurvey.Tests.EFTests" runstate="Runnable" seed="1280066863" result="Passed" start-time="2017-03-18 15:09:39Z" end-time="2017-03-18 15:09:39Z" duration="0.014714" asserts="3" />
+          <test-case id="1005" name="Can_Add_Users_in_repository" fullname="SocialSurvey.Tests.EFTests.Can_Add_Users_in_repository" methodname="Can_Add_Users_in_repository" classname="SocialSurvey.Tests.EFTests" runstate="Runnable" seed="1377738929" result="Failed" label="Error" start-time="2017-03-18 15:09:39Z" end-time="2017-03-18 15:09:39Z" duration="0.154207" asserts="1">
+            <failure>
+              <message><![CDATA[System.InvalidOperationException : Sequence contains more than one element]]></message>
+              <stack-trace><![CDATA[   at System.Linq.Enumerable.Single[TSource](IEnumerable`1 source)
+   at lambda_method(Closure , QueryContext )
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.<>c__DisplayClass20_0`1.<CompileQueryCore>b__0(QueryContext qc)
+   at SocialSurvey.Tests.EFTests.Can_Add_Users_in_repository() in D:\develop\SocialSurvey\SocialSurvey.Tests\EFTests.cs:line 219]]></stack-trace>
+            </failure>
+          </test-case>
+          <test-case id="1008" name="Can_Find_Options" fullname="SocialSurvey.Tests.EFTests.Can_Find_Options" methodname="Can_Find_Options" classname="SocialSurvey.Tests.EFTests" runstate="Runnable" seed="597890561" result="Passed" start-time="2017-03-18 15:09:39Z" end-time="2017-03-18 15:09:39Z" duration="0.003623" asserts="0" />
+          <test-case id="1007" name="Can_Find_Questions" fullname="SocialSurvey.Tests.EFTests.Can_Find_Questions" methodname="Can_Find_Questions" classname="SocialSurvey.Tests.EFTests" runstate="Runnable" seed="1995769893" result="Passed" start-time="2017-03-18 15:09:39Z" end-time="2017-03-18 15:09:39Z" duration="0.002899" asserts="0" />
+          <test-case id="1006" name="Can_Find_Surveys" fullname="SocialSurvey.Tests.EFTests.Can_Find_Surveys" methodname="Can_Find_Surveys" classname="SocialSurvey.Tests.EFTests" runstate="Runnable" seed="740537701" result="Passed" start-time="2017-03-18 15:09:39Z" end-time="2017-03-18 15:09:39Z" duration="0.002373" asserts="0" />
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
