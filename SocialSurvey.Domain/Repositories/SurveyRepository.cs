@@ -28,20 +28,42 @@ namespace SocialSurvey.Domain.Repositories
             if (surveyToDelete == null)
                 throw new ArgumentOutOfRangeException($"There is no survey with id - {id}");
 
-            surveyToDelete.IsDeleted = true;
-            foreach (var question in surveyToDelete.Questions)
+            if (hard)
             {
-                question.IsDeleted = true;
-                foreach (var option in question.Options)
-                    option.IsDeleted = true;
+                _ctx.Surveys.Remove(surveyToDelete);
             }
-            _ctx.Entry(surveyToDelete).State = EntityState.Modified;
+            else
+            {
+                surveyToDelete.IsDeleted = true;
+                foreach (var question in surveyToDelete.Questions)
+                {
+                    question.IsDeleted = true;
+                    foreach (var option in question.Options)
+                        option.IsDeleted = true;
+                }
+                _ctx.Entry(surveyToDelete).State = EntityState.Modified;
+            }
         }
 
         public void Delete(Survey entity, bool hard = true)
         {
-            entity.IsDeleted = true;
-            _ctx.Entry(entity).State = EntityState.Deleted;
+            if (hard)
+            {
+                _ctx.Surveys.Remove(entity);
+            }
+            else
+            {
+                entity.IsDeleted = true;
+                if (entity.Questions != null)
+                    foreach (var question in entity.Questions)
+                    {
+                        question.IsDeleted = true;
+                        if (question.Options != null)
+                            foreach (var option in question.Options)
+                                option.IsDeleted = true;
+                    }
+                _ctx.Entry(entity).State = EntityState.Deleted;
+            }
         }
 
         public IEnumerable<Survey> Find(Func<Survey, bool> predicate)
@@ -69,12 +91,15 @@ namespace SocialSurvey.Domain.Repositories
                 throw new ArgumentOutOfRangeException($"There is no survey with id - {id}");
 
             surveyToDelete.IsDeleted = false;
-            foreach (var question in surveyToDelete.Questions)
-            {
-                question.IsDeleted = false;
-                foreach (var option in question.Options)
-                    option.IsDeleted = false;
-            }
+            if (surveyToDelete.Questions != null)
+                foreach (var question in surveyToDelete.Questions)
+                {
+                    question.IsDeleted = false;
+                    if (question.Options != null)
+                        foreach (var option in question.Options)
+                            option.IsDeleted = false;
+                }
+
             _ctx.Entry(surveyToDelete).State = EntityState.Modified;
         }
 

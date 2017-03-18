@@ -122,7 +122,6 @@ namespace SocialSurvey.Tests
                 connection.Close();
             }
         }
-
         [Test]
         public void Can_DeleteById_Soft_in_UsersRepository()
         {
@@ -161,7 +160,6 @@ namespace SocialSurvey.Tests
                 connection.Close();
             }
         }
-
         [Test]
         public void Can_DeleteById_Hard_in_UsersRepository()
         {
@@ -237,7 +235,6 @@ namespace SocialSurvey.Tests
                 connection.Close();
             }
         }
-
         [Test]
         public void Can_DeleteByObject_Hard_in_UsersRepository()
         {
@@ -275,8 +272,6 @@ namespace SocialSurvey.Tests
                 connection.Close();
             }
         }
-
-
         [Test]
         public void Can_RestoreById_in_UsersRepository()
         {
@@ -316,7 +311,6 @@ namespace SocialSurvey.Tests
                 connection.Close();
             }
         }
-
         [Test]
         public void Can_RestoreByObject_in_UsersRepository()
         {
