@@ -24,6 +24,8 @@ namespace SocialSurvey.Domain.Entities
         public string MiddleName { get; set; }
         public Role Role { get; set; }
         public DateTime CreationDate { get; set; }
+        public bool IsDeleted { get; set; }
+
 
         public List<Survey> Surveys { get; set; }
         public User()

@@ -17,6 +17,7 @@ namespace SocialSurvey.Domain.Entities
         public QuestionType QuestionType { get; set; }
         public string Text { get; set; }
         public int Order { get; set; }
+        public bool IsDeleted { get; set; }
 
         public int SurveyId { get; set; }
         public Survey Survey { get; set; }

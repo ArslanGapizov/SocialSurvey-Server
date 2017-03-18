@@ -24,7 +24,8 @@ namespace SocialSurvey.Domain.Repositories
 
         public void Delete(User entity)
         {
-            throw new NotImplementedException();
+            entity.IsDeleted = true;
+            _ctx.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
 
         public IEnumerable<User> Find(Func<User, bool> predicate)
@@ -39,7 +40,13 @@ namespace SocialSurvey.Domain.Repositories
 
         public IEnumerable<User> GetAll()
         {
-            throw new NotImplementedException();
+            return _ctx.Users;
+        }
+
+        public void Restore(User entity)
+        {
+            entity.IsDeleted = false;
+            _ctx.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
 
         public void Update(User entity)

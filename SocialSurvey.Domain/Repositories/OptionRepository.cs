@@ -19,32 +19,58 @@ namespace SocialSurvey.Domain.Repositories
 
         public void Create(Option entity)
         {
-            throw new NotImplementedException();
+            _ctx.Options.Add(entity);
+        }
+
+        public void Delete(int id)
+        {
+            Option optionToDelete = Get(id);
+            if (optionToDelete == null)
+                throw new ArgumentOutOfRangeException($"There are no option with id - {id}");
+            optionToDelete.IsDeleted = true;
+            _ctx.Entry(optionToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
 
         public void Delete(Option entity)
         {
-            throw new NotImplementedException();
+            entity.IsDeleted = true;
+            _ctx.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
 
         public IEnumerable<Option> Find(Func<Option, bool> predicate)
         {
-            throw new NotImplementedException();
+            return _ctx.Options.Where(predicate);
         }
 
         public Option Get(int id)
         {
-            throw new NotImplementedException();
+            return _ctx.Options.Find(id);
         }
 
         public IEnumerable<Option> GetAll()
         {
-            throw new NotImplementedException();
+            return _ctx.Options;
+        }
+
+        public void Restore(int id)
+        {
+            Option optionToRestore = Get(id);
+            if (optionToRestore == null)
+                throw new ArgumentOutOfRangeException($"There are no option with id - {id}");
+
+            optionToRestore.IsDeleted = false;
+            _ctx.Entry(optionToRestore).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+        }
+
+        public void Restore(Option entity)
+        {
+            entity.IsDeleted = false;
+            _ctx.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
 
         public void Update(Option entity)
         {
-            throw new NotImplementedException();
+            _ctx.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
     }
 }

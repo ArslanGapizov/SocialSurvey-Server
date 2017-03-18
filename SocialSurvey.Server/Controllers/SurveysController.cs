@@ -33,7 +33,9 @@ namespace SocialSurvey.Server.Controllers
             base.Dispose(disposing);
         }
 
-        // GET api/surveys
+        /// <summary>
+        /// Action for getting all Surveys
+        /// </summary>
         [Authorize]
         [HttpGet]
         public IActionResult Get()
@@ -55,7 +57,9 @@ namespace SocialSurvey.Server.Controllers
             return Ok(response);
         }
 
-        // GET api/values/5
+        /// <summary>
+        /// Action for getting survey by id
+        /// </summary>
         [Authorize]
         [HttpGet("{id}")]
         public IActionResult Get(int id)
@@ -69,7 +73,7 @@ namespace SocialSurvey.Server.Controllers
             response.Link = Request.GetDisplayUrl();
             response.Method = Request.Method;
             response.Message = "This method is under development";
-            
+
             response.Response = new SurveyDTO
             {
                 SurveyId = survey.SurveyId,
@@ -99,7 +103,9 @@ namespace SocialSurvey.Server.Controllers
             return Ok(response);
         }
 
-        // POST api/values
+        /// <summary>
+        /// Action for adding new survey
+        /// </summary>
         [Authorize]
         [HttpPost]
         public IActionResult Post([FromBody] SurveyDTO survey)
@@ -134,20 +140,34 @@ namespace SocialSurvey.Server.Controllers
             return Ok($"Successful created, ID: {entry.SurveyId}");
         }
 
-        // PUT api/values/5
+        /// <summary>
+        /// Action for changing survey`s data by id
+        /// </summary>
         [Authorize]
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] SurveyDTO value)
         {
-
+            
         }
 
-        // DELETE api/values/5
+        /// <summary>
+        /// Action for deleting survey by id
+        /// </summary>
         [Authorize]
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            if (_uow.Surveys.Get(id) == null)
+                return NotFound("Survey is not found");
+
+            _uow.Surveys.Delete(id);
+            _uow.Save();
+            return Ok("Deleted successfully");
         }
+
+        /// <summary>
+        /// Action for getting questions by survey`s id
+        /// </summary>
         [Authorize]
         [HttpGet("{id}/questions")]
         public IActionResult GetQuestions(int id)
@@ -158,9 +178,11 @@ namespace SocialSurvey.Server.Controllers
                 return NotFound($"Survey with id-{id} is not exist");
 
             var response = new ListResponse<QuestionDTO>();
+
             response.Link = Request.GetDisplayUrl();
             response.Method = Request.Method;
             response.Message = "This method is under development";
+
             response.Response = survey.Questions.Select(question =>
             new QuestionDTO
             {
@@ -172,6 +194,36 @@ namespace SocialSurvey.Server.Controllers
             }).ToList();
 
             return Ok(response);
+        }
+
+        /// <summary>
+        /// Action for adding question to survey by its id
+        /// </summary>
+        [Authorize]
+        [HttpPost("{id}/questions")]
+        public IActionResult PostQuestion(int id, [FromBody] QuestionDTO question)
+        {
+            var survey = _uow.Surveys.Get(id);
+
+            if (survey == null)
+                return NotFound($"Survey with id-{id} is not exist");
+            
+            int maxOrder = survey.Questions.Max(x => x.Order);
+            var newQuestion = new Question
+            {
+                Text = question.Text,
+                Order = maxOrder + 1,
+                QuestionType = question.QuestionType,
+                Options = question.Options.Select(option =>
+                                    new Option
+                                    {
+                                        Text = option.Text,
+                                        Order = option.Order
+                                    }).ToList()
+            };
+            survey.Questions.Add(newQuestion);
+
+            return Ok($"Question added, id - {newQuestion.QuestionId}");
         }
     }
 }

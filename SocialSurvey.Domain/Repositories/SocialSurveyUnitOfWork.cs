@@ -63,7 +63,9 @@ namespace SocialSurvey.Domain.Repositories
             }
         }
         
-
+        /// <summary>
+        /// Save all changing in db
+        /// </summary>
         public void Save()
         {
             _ctx.SaveChanges();

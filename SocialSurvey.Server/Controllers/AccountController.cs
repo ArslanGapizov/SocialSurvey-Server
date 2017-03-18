@@ -26,6 +26,10 @@ namespace SocialSurvey.Server.Controllers
         {
             _uow = unitOfWork;
         }
+
+        /// <summary>
+        /// Action for getting currentUser
+        /// </summary>
         [Authorize]
         [HttpGet]
         public IActionResult Get()
@@ -47,6 +51,10 @@ namespace SocialSurvey.Server.Controllers
 
             return Ok(response);
         }
+        /// <summary>
+        /// Action for changing information
+        /// </summary>
+        /// <param name="user"></param>
         [Authorize]
         [HttpPut]
         public IActionResult Put([FromBody] UserDTO user)
@@ -65,6 +73,10 @@ namespace SocialSurvey.Server.Controllers
             
             return Ok("Succeeded");
         }
+
+        /// <summary>
+        /// Action for changing password
+        /// </summary>
         [Authorize]
         [HttpPut("/api/account/password")]
         public IActionResult Put()

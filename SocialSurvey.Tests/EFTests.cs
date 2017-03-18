@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using Microsoft.Data.Sqlite;
 using SocialSurvey.Domain.DB;
 using SocialSurvey.Domain.Entities;
+using SocialSurvey.Domain.Repositories;
 
 namespace SocialSurvey.Tests
 {
@@ -189,7 +190,7 @@ namespace SocialSurvey.Tests
         #endregion
         
         [Test]
-        public void Can_Find_Users()
+        public void Can_Add_Users_in_repository()
         {
             var connection = new SqliteConnection("DataSource=:memory:");
             connection.Open();
