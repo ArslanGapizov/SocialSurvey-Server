@@ -1,8 +1,6 @@
 ﻿using SocialSurvey.Domain.Entities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SocialSurvey.Tests
 {
@@ -25,14 +23,34 @@ namespace SocialSurvey.Tests
             }
             return users;
         }
-        public static Survey[] GenerateSurveys(User user)
+        public static Survey[] GenerateFullSurveys()
+        {
+            var surveys = new Survey[3];
+            for (int i = 0; i < surveys.Count(); i++)
+            {
+                surveys[i] = new Survey()
+                {
+                    Name = "survey" + i,
+                    Comment = "comment"
+                };
+                var questions = GenerateQuestions(surveys[i]);
+                foreach (var question in questions)
+                {
+                    question.Options.AddRange(GenerateOptions(question));
+                }
+                surveys[i].Questions.AddRange(questions);
+            }
+
+            return surveys;
+        }
+        public static Survey[] GenerateSurveys(User user = null)
         {
             Survey[] surveys = new Survey[3];
             for (int i = 0; i < surveys.Length; i++)
             {
                 surveys[i] = new Survey()
                 {
-                    Name = "survey" + i + user.Login,
+                    Name = "survey" + i + ((user == null)?"":user.Login),
                     Comment = "comment",
                     User = user
                 };

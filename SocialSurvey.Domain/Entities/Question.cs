@@ -23,5 +23,10 @@ namespace SocialSurvey.Domain.Entities
         public Survey Survey { get; set; }
 
         public List<Option> Options { get; set; }
+
+        public Question()
+        {
+            Options = new List<Option>();
+        }
     }
 }

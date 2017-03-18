@@ -120,7 +120,87 @@ namespace SocialSurvey.Domain.Repositories
 
         public void Update(Survey entity)
         {
-            _ctx.Entry(entity).State = EntityState.Modified;
+            var existingSurvey = _ctx.Surveys
+                .Where(s => s.SurveyId == entity.SurveyId)
+                .Include(s => s.Questions)
+                .ThenInclude(q => q.Options)
+                .SingleOrDefault();
+
+            if (existingSurvey == null)
+                throw new ArgumentException($"There is no survey with id - {entity.SurveyId}");
+
+            //Update survey
+            _ctx.Entry(existingSurvey).CurrentValues.SetValues(entity);
+
+            //Delete questions
+            foreach (var existingQuestion in existingSurvey.Questions)
+            {
+                if (!entity.Questions
+                    .Any(q => q.QuestionId == existingQuestion.QuestionId))
+                    _ctx.Questions.Remove(existingQuestion);
+                foreach (var existionOption in existingQuestion.Options)
+                {
+                    if (!entity.Questions.Any(q => q.Options.Any(o => o.OptionId == existionOption.OptionId)))
+                        _ctx.Options.Remove(existionOption);
+                }
+            }
+
+            //tempList of questions for adding in the end of loop
+            var tempQuestions = new List<Question>();
+            // Update and Insert questions
+            foreach (var questionEntity in entity.Questions)
+            {
+                var existingQuestion = existingSurvey.Questions
+                    .Where(q => q.QuestionId == questionEntity.QuestionId)
+                    .SingleOrDefault();
+
+                if (existingQuestion != null)
+                {
+                    //Update question
+                    _ctx.Entry(existingQuestion).CurrentValues.SetValues(questionEntity);
+
+                    //tempList of options for adding in the end of loop
+                    List<Option> tempOptions = new List<Option>();
+                    foreach (var optionEntity in questionEntity.Options)
+                    {
+                        var existingOption = existingQuestion.Options
+                            .Where(o => o.OptionId == optionEntity.OptionId)
+                            .SingleOrDefault();
+
+                        if (existingOption != null)
+                        {
+                            //Update option
+                            _ctx.Entry(existingOption).CurrentValues.SetValues(optionEntity);
+                        }
+                        else
+                        {
+                            //Insert option
+                            var newOption = new Option
+                            {
+                                Text = optionEntity.Text,
+                                IsDeleted = optionEntity.IsDeleted,
+                                Order = optionEntity.Order
+                            };
+                            tempOptions.Add(newOption);
+                        }
+                            
+                    }
+                    existingQuestion.Options.AddRange(tempOptions);
+                }
+                else
+                {
+                    //Insert question
+                    var newQuestion = new Question
+                    {
+                        Text = questionEntity.Text,
+                        Order = questionEntity.Order,
+                        IsDeleted = questionEntity.IsDeleted,
+                        QuestionType = questionEntity.QuestionType
+                    };
+                    tempQuestions.Add(questionEntity);
+                }
+            }
+            existingSurvey.Questions.AddRange(tempQuestions);
         }
     }
 }
