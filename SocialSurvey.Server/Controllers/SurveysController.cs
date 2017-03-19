@@ -50,6 +50,7 @@ namespace SocialSurvey.Server.Controllers
                 SurveyId = s.SurveyId,
                 Name = s.Name,
                 Comment = s.Comment,
+                IsDeleted = s.IsDeleted,
                 UserId = s.UserId
             });
             response.Response = responseList;
@@ -80,6 +81,7 @@ namespace SocialSurvey.Server.Controllers
                 Name = survey.Name,
                 Comment = survey.Comment,
                 UserId = survey.UserId,
+                IsDeleted = survey.IsDeleted,
                 Questions = survey
                             .Questions
                             .Select(question =>
@@ -89,12 +91,14 @@ namespace SocialSurvey.Server.Controllers
                                 Text = question.Text,
                                 Order = question.Order,
                                 QuestionType = question.QuestionType,
+                                IsDeleted = question.IsDeleted,
                                 Options = question.Options.Select(option =>
                                     new OptionDTO
                                     {
                                         Text = option.Text,
                                         OptionId = option.OptionId,
-                                        Order = option.Order
+                                        Order = option.Order,
+                                        IsDeleted = option.IsDeleted
                                     }
                                 ).ToList()
                             }
@@ -145,9 +149,58 @@ namespace SocialSurvey.Server.Controllers
         /// </summary>
         [Authorize]
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] SurveyDTO value)
+        public IActionResult Put(int id, [FromBody] SurveyDTO received)
         {
-            
+            if (_uow.Surveys.Get(id) == null)
+                return NotFound($"Survey with id - {id} is not exist");
+
+            List<Question> questionsToUpdate = new List<Question>();
+
+            foreach (var question in received.Questions)
+            {
+                List<Option> optionsToUpdate = new List<Option>();
+
+                foreach (var option in question.Options)
+                {
+                    optionsToUpdate.Add(new Option
+                    {
+                        QuestionId = question.QuestionId,
+                        OptionId = option.OptionId,
+                        Text = option.Text,
+                        Order = option.Order,
+                        IsDeleted = /*received.IsDeleted ? true
+                                    : question.IsDeleted ? true
+                                    :*/ option.IsDeleted,
+                    });
+                }
+
+                questionsToUpdate.Add(new Question
+                {
+                    SurveyId = received.SurveyId,
+                    QuestionId = question.QuestionId,
+                    Text = question.Text,
+                    QuestionType = question.QuestionType,
+                    IsDeleted = /*received.IsDeleted ? true
+                                :*/ question.IsDeleted,
+                    Order = question.Order,
+                    Options = optionsToUpdate
+                });
+            }
+
+            Survey surveyToUpdate = new Survey
+            {
+                SurveyId = id,
+
+                UserId = received.UserId,
+                Name = received.Name,
+                Comment = received.Comment,
+                IsDeleted = received.IsDeleted,
+                Questions = questionsToUpdate
+            };
+
+            _uow.Surveys.Update(surveyToUpdate);
+            _uow.Save();
+            return Ok("Updated");
         }
 
         /// <summary>
@@ -191,6 +244,7 @@ namespace SocialSurvey.Server.Controllers
                 Order = question.Order,
                 QuestionType = question.QuestionType,
                 QuestionId = question.QuestionId,
+                IsDeleted = question.IsDeleted,
                 SurveyId = question.SurveyId
             }).ToList();
 

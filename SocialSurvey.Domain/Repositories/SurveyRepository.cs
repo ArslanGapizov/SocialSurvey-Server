@@ -138,6 +138,7 @@ namespace SocialSurvey.Domain.Repositories
                 if (!entity.Questions
                     .Any(q => q.QuestionId == existingQuestion.QuestionId))
                     _ctx.Questions.Remove(existingQuestion);
+
                 foreach (var existionOption in existingQuestion.Options)
                 {
                     if (!entity.Questions.Any(q => q.Options.Any(o => o.OptionId == existionOption.OptionId)))
@@ -156,9 +157,10 @@ namespace SocialSurvey.Domain.Repositories
 
                 if (existingQuestion != null)
                 {
+
                     //Update question
                     _ctx.Entry(existingQuestion).CurrentValues.SetValues(questionEntity);
-
+                    
                     //tempList of options for adding in the end of loop
                     List<Option> tempOptions = new List<Option>();
                     foreach (var optionEntity in questionEntity.Options)

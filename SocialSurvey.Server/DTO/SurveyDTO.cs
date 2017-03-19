@@ -11,6 +11,7 @@ namespace SocialSurvey.Server.DTO
         public int SurveyId { get; set; }
         public string Name { get; set; }
         public string Comment { get; set; }
+        public bool IsDeleted { get; set; }
 
         public int? UserId{ get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
