@@ -213,12 +213,37 @@ namespace SocialSurvey.Server.Controllers
             if (_uow.Surveys.Get(id) == null)
                 return NotFound("Survey is not found");
 
-            _uow.Surveys.Delete(id);
+            _uow.Surveys.Delete(id, true);
             _uow.Save();
 
             return Ok("Deleted successfully");
         }
 
+        [Authorize]
+        [HttpDelete("{id}/soft")]
+        public IActionResult SoftDelete(int id)
+        {
+            if (_uow.Surveys.Get(id) == null)
+                return NotFound("Survey is not found");
+
+            _uow.Surveys.Delete(id, false);
+            _uow.Save();
+
+            return Ok("Deleted successfully");
+        }
+
+        [Authorize]
+        [HttpPatch("{id}/restore")]
+        public IActionResult Restore(int id)
+        {
+            if (_uow.Surveys.Get(id) == null)
+                return NotFound("Survey is not found");
+
+            _uow.Surveys.Restore(id);
+            _uow.Save();
+
+            return Ok("Restored successfully");
+        }
         /// <summary>
         /// Action for getting questions by survey`s id
         /// </summary>
