@@ -35,12 +35,12 @@ namespace SocialSurvey.Domain.Repositories
             else
             {
                 surveyToDelete.IsDeleted = true;
-                foreach (var question in surveyToDelete.Questions)
-                {
-                    question.IsDeleted = true;
-                    foreach (var option in question.Options)
-                        option.IsDeleted = true;
-                }
+                //foreach (var question in surveyToDelete.Questions)
+                //{
+                //    question.IsDeleted = true;
+                //    foreach (var option in question.Options)
+                //        option.IsDeleted = true;
+                //}
                 _ctx.Entry(surveyToDelete).State = EntityState.Modified;
             }
         }
@@ -55,12 +55,12 @@ namespace SocialSurvey.Domain.Repositories
             else
             {
                 surveyToDelete.IsDeleted = true;
-                foreach (var question in surveyToDelete.Questions)
-                {
-                    question.IsDeleted = true;
-                    foreach (var option in question.Options)
-                        option.IsDeleted = true;
-                }
+                //foreach (var question in surveyToDelete.Questions)
+                //{
+                //    question.IsDeleted = true;
+                //    foreach (var option in question.Options)
+                //        option.IsDeleted = true;
+                //}
                 _ctx.Entry(surveyToDelete).State = EntityState.Modified;
             }
         }
@@ -90,14 +90,14 @@ namespace SocialSurvey.Domain.Repositories
                 throw new ArgumentOutOfRangeException($"There is no survey with id - {id}");
 
             surveyToRestore.IsDeleted = false;
-            if (surveyToRestore.Questions != null)
-                foreach (var question in surveyToRestore.Questions)
-                {
-                    question.IsDeleted = false;
-                    if (question.Options != null)
-                        foreach (var option in question.Options)
-                            option.IsDeleted = false;
-                }
+            //if (surveyToRestore.Questions != null)
+            //    foreach (var question in surveyToRestore.Questions)
+            //    {
+            //        question.IsDeleted = false;
+            //        if (question.Options != null)
+            //            foreach (var option in question.Options)
+            //                option.IsDeleted = false;
+            //    }
 
             _ctx.Entry(surveyToRestore).State = EntityState.Modified;
         }
@@ -106,14 +106,14 @@ namespace SocialSurvey.Domain.Repositories
         {
             var surveyToRestore = Get(entity.SurveyId);
             surveyToRestore.IsDeleted = false;
-            if (surveyToRestore.Questions != null)
-                foreach (var question in surveyToRestore.Questions)
-                {
-                    question.IsDeleted = false;
-                    if (question.Options != null)
-                        foreach (var option in question.Options)
-                            option.IsDeleted = false;
-                }
+            //if (surveyToRestore.Questions != null)
+            //    foreach (var question in surveyToRestore.Questions)
+            //    {
+            //        question.IsDeleted = false;
+            //        if (question.Options != null)
+            //            foreach (var option in question.Options)
+            //                option.IsDeleted = false;
+            //    }
 
             _ctx.Entry(surveyToRestore).State = EntityState.Modified;
         }
