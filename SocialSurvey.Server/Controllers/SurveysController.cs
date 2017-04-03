@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SocialSurvey.Domain.DB;
 using SocialSurvey.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 using SocialSurvey.Domain.Interfaces;
 using SocialSurvey.Server.DTO;
 using SocialSurvey.Server.Responses;
-using System.Diagnostics;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Authorization;
 
