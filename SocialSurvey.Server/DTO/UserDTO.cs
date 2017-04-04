@@ -15,10 +15,15 @@ namespace SocialSurvey.Server.DTO
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string MiddleName { get; set; }
+
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Password { get; set; }
+
         [JsonConverter(typeof(StringEnumConverter))]
-        public Role Role { get; set; }
-        public bool IsDeleted { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public Role? Role { get; set; }
+
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public bool? IsDeleted { get; set; }
     }
 }

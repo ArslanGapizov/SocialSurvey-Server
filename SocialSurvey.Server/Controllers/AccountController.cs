@@ -47,6 +47,7 @@ namespace SocialSurvey.Server.Controllers
                 FirstName = currentUser.FirstName,
                 LastName = currentUser.LastName,
                 MiddleName = currentUser.MiddleName,
+                Role = currentUser.Role
             };
 
             return Ok(response);
@@ -60,6 +61,8 @@ namespace SocialSurvey.Server.Controllers
         public IActionResult Put([FromBody] UserDTO user)
         {
             User currentUser = _uow.Users.Find(x => x.Login == User.Identity.Name).FirstOrDefault();
+            if (currentUser == null)
+                return BadRequest("User is not found");
 
             if (!string.IsNullOrEmpty(user.FirstName))
                 currentUser.FirstName = user.FirstName;

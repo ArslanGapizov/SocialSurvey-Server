@@ -134,35 +134,40 @@ namespace SocialSurvey.Server.Controllers
         }
 
         // TODO
-        [HttpPost]
-        public void Post([FromBody]string value)
-        {
+        //[HttpPost]
+        //public void Post([FromBody]string value)
+        //{
 
-        }
+        //}
         
         [Authorize]
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody]UserDTO data)
         {
-            if (_uow.Users.Get(id) == null)
+            User userToUpdate = _uow.Users.Get(id);
+            if (userToUpdate == null)
                 return BadRequest($"User with id - {id} is not exist");
+            
 
-            User userToUpdate = new User()
-            {
-                UserId = id,
-                FirstName = data.FirstName,
-                LastName = data.LastName,
-                MiddleName = data.MiddleName,
-                IsDeleted = data.IsDeleted,
-                Role = data.Role,
-                PasswordHash = HashConverter.GetHash(data.Password)
-            };
+            if (!String.IsNullOrEmpty(data.FirstName))
+                userToUpdate.FirstName = data.FirstName;
+            if (!String.IsNullOrEmpty(data.LastName))
+                userToUpdate.LastName = data.LastName;
+            if (!String.IsNullOrEmpty(data.MiddleName))
+                userToUpdate.MiddleName = data.MiddleName;
+            if (data.Role.HasValue)
+                userToUpdate.Role = (Role)data.Role;
+            if (data.IsDeleted.HasValue)
+                userToUpdate.IsDeleted = (bool)data.IsDeleted;
+            if (!String.IsNullOrEmpty(data.Password))
+                userToUpdate.PasswordHash = HashConverter.GetHash(data.Password);
 
             _uow.Users.Update(userToUpdate);
             _uow.Save();
 
             return Ok("Updated");
         }
+
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
