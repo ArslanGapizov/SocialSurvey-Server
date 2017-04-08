@@ -14,7 +14,6 @@ namespace SocialSurvey.Domain.DB
         {
             //Database.EnsureDeleted();
             //Database.EnsureCreated();
-            
         }
 
         public DbSet<User> Users { get; set; }
