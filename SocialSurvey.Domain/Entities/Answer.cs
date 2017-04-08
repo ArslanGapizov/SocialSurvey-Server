@@ -16,6 +16,11 @@ namespace SocialSurvey.Domain.Entities
         public int QuestionId { get; set; }
         public Question Question { get; set; }
 
+        public List<AnswerOption> AnswerOptions { get; set; }
 
+        public Answer()
+        {
+            AnswerOptions = new List<AnswerOption>();
+        }
     }
 }

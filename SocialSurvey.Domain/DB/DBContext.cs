@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SocialSurvey.Domain.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace SocialSurvey.Domain.DB
 {
@@ -22,6 +23,7 @@ namespace SocialSurvey.Domain.DB
         public DbSet<Option> Options { get; set; }
         public DbSet<Form> Forms { get; set; }
         public DbSet<Answer> Answers { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //User Table
@@ -98,6 +100,28 @@ namespace SocialSurvey.Domain.DB
                 .WithMany(q => q.Answers)
                 .HasForeignKey(a => a.QuestionId);
 
+            //AnswerOption table
+            modelBuilder.Entity<AnswerOption>()
+                .HasKey(t => new { t.AnswerId, t.OptionId });
+            modelBuilder.Entity<AnswerOption>()
+                .HasOne(ao => ao.Answer)
+                .WithMany(a => a.AnswerOptions)
+                .HasForeignKey(ao => ao.AnswerId);
+
+            modelBuilder.Entity<AnswerOption>()
+                .HasOne(ao => ao.Option)
+                .WithMany(o => o.AnswerOptions)
+                .HasForeignKey(ao => ao.OptionId);
+
+            //need for ef, off cascade deleting, need ti rewrite
+            modelBuilder.Entity<Question>()
+                .HasMany(h => h.Answers)
+                .WithOne(w => w.Question)
+                .OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehav‌​ior.Restrict);
+            modelBuilder.Entity<Option>()
+                .HasMany(h => h.AnswerOptions)
+                .WithOne(w => w.Option)
+                .OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehav‌​ior.Restrict);
             base.OnModelCreating(modelBuilder);
         }
 
