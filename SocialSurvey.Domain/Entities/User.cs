@@ -28,9 +28,11 @@ namespace SocialSurvey.Domain.Entities
 
 
         public List<Survey> Surveys { get; set; }
+        public List<Form> Forms { get; set; }
         public User()
         {
             Surveys = new List<Survey>();
+            Forms = new List<Form>();
         }
     }
 }

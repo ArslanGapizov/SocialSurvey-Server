@@ -17,6 +17,7 @@ namespace SocialSurvey.Domain.Repositories
         private SurveyRepository surveyRepository;
         private QuestionRepository questionRepository;
         private OptionRepository optionRepository;
+        private FormRepository formRepository;
 
         public SocialSurveyUOW(DbContextOptions<SocialSurveyContext> options)
         {
@@ -63,6 +64,16 @@ namespace SocialSurvey.Domain.Repositories
             }
         }
         
+        public IRepository<Form> Forms
+        {
+            get
+            {
+                if (formRepository == null)
+                    formRepository = new FormRepository(_ctx);
+                return formRepository;
+            }
+        }
+
         /// <summary>
         /// Save all changing in db
         /// </summary>
