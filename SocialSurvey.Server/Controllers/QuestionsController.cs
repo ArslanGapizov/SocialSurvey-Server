@@ -4,6 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SocialSurvey.Domain.Interfaces;
+using SocialSurvey.Server.DTO;
+using SocialSurvey.Server.Responses;
+using Microsoft.AspNetCore.Http.Extensions;
+using SocialSurvey.Domain.Entities;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,36 +21,166 @@ namespace SocialSurvey.Server.Controllers
         {
             _uow = unitOfWork;
         }
-        // GET: api/values
+
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IActionResult Get()
         {
-            return new string[] { "value1", "value2" };
+            var response = new ListResponse<QuestionDTO>();
+
+            response.Link = Request.GetDisplayUrl();
+            response.Message = "This method is under development";
+            var questions = _uow.Questions.GetAll();
+            IEnumerable<QuestionDTO> responseList = questions.Select(q => new QuestionDTO
+            {
+                QuestionId = q.QuestionId,
+                Text = q.Text,
+                Order = q.Order,
+                QuestionType = q.QuestionType,
+                IsDeleted = q.IsDeleted,
+                SurveyId = q.SurveyId
+            });
+            response.Response = responseList;
+
+            return Ok(response);
         }
 
-        // GET api/values/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult Get(int id)
         {
-            return "value";
+            var question = _uow.Questions.Get(id);
+
+            if (question == null)
+                return NotFound($"Question with id {id} is not exist");
+
+            var response = new SingleResponse<QuestionDTO>();
+            response.Link = Request.GetDisplayUrl();
+            response.Method = Request.Method;
+            response.Message = "This method is under development";
+
+            response.Response = new QuestionDTO
+            {
+                QuestionId = question.QuestionId,
+                Text = question.Text,
+                Order = question.Order,
+                QuestionType = question.QuestionType,
+                IsDeleted = question.IsDeleted,
+                SurveyId = question.SurveyId,
+                Options = question.Options.Select(option =>
+                new OptionDTO
+                {
+                    Text = option.Text,
+                    OptionId = option.OptionId,
+                    Order = option.Order,
+                    IsDeleted = option.IsDeleted
+                }).ToList()
+            };
+
+            return Ok(response);
         }
 
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody]string value)
-        {
-        }
-
-        // PUT api/values/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public IActionResult Put(int id, [FromBody]Question received)
         {
+            if (_uow.Questions.Get(id) == null)
+                return NotFound($"Question with id {id} is not exist");
+
+            List<Option> optionsToUpdate = new List<Option>();
+
+            foreach(var option in received.Options)
+            {
+                optionsToUpdate.Add(new Option
+                {
+                    QuestionId = option.QuestionId,
+                    OptionId = option.OptionId,
+                    Text = option.Text,
+                    Order = option.Order,
+                    IsDeleted = option.IsDeleted 
+                });
+            }
+
+            Question questionToUpdate = new Question
+            {
+                QuestionId = id,
+                Text = received.Text,
+                Order = received.Order,
+                QuestionType = received.QuestionType,
+                IsDeleted = received.IsDeleted,
+                SurveyId = received.SurveyId,
+                Options = optionsToUpdate
+            };
+
+            _uow.Questions.Update(questionToUpdate);
+            _uow.Save();
+            return Ok("Updated");
         }
 
-        // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            if (_uow.Questions.Get(id) == null)
+                return NotFound("Question is not found");
+
+            _uow.Questions.Delete(id, true);
+            _uow.Save();
+
+            return Ok("Deleted successfully");
+        }
+
+        [HttpDelete("{id}/soft")]
+        public IActionResult SoftDelete(int id)
+        {
+            if (_uow.Questions.Get(id) == null)
+                return NotFound("Question is not found");
+
+            _uow.Questions.Delete(id, false);
+            _uow.Save();
+
+            return Ok("Deleted successfully");
+        }
+        [HttpPatch("{id}/restore")]
+        public IActionResult Restore(int id)
+        {
+            if (_uow.Questions.Get(id) == null)
+                return NotFound("Question is not found");
+
+            _uow.Questions.Restore(id);
+            _uow.Save();
+
+            return Ok("Restored successfully");
+        }
+
+        [HttpGet("{id}/options")]
+        public IActionResult GetOptions(int id)
+        {
+            var question = _uow.Questions.Get(id);
+
+            if (question == null)
+                return NotFound($"Question with id {id} is not exist");
+
+            var response = new SingleResponse<QuestionDTO>();
+            response.Link = Request.GetDisplayUrl();
+            response.Method = Request.Method;
+            response.Message = "This method is under development";
+
+            response.Response = new QuestionDTO
+            {
+                QuestionId = question.QuestionId,
+                Text = question.Text,
+                Order = question.Order,
+                QuestionType = question.QuestionType,
+                IsDeleted = question.IsDeleted,
+                SurveyId = question.SurveyId,
+                Options = question.Options.Select(option =>
+                new OptionDTO
+                {
+                    Text = option.Text,
+                    OptionId = option.OptionId,
+                    Order = option.Order,
+                    IsDeleted = option.IsDeleted
+                }).ToList()
+            };
+
+            return Ok(response);
         }
     }
 }

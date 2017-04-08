@@ -4,6 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SocialSurvey.Domain.Interfaces;
+using SocialSurvey.Server.Responses;
+using SocialSurvey.Server.DTO;
+using Microsoft.AspNetCore.Http.Extensions;
+using SocialSurvey.Domain.Entities;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,37 +22,104 @@ namespace SocialSurvey.Server.Controllers
         {
             _uow = unitOfWork;
         }
-
-        // GET: api/values
+        
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IActionResult Get()
         {
-            return new string[] { "value1", "value2" };
+            var options = _uow.Options.GetAll();
+            var response = new ListResponse<OptionDTO>();
+            response.Link = Request.GetDisplayUrl();
+            response.Method = Request.Method;
+            response.Method = "This method is under development";
+            response.Response = options.Select(o => new OptionDTO
+            {
+                OptionId = o.OptionId,
+                Text = o.Text,
+                Order = o.Order,
+                IsDeleted = o.IsDeleted,
+                QuestionId = o.QuestionId
+            });
+
+            return Ok(response);
         }
 
-        // GET api/values/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult Get(int id)
         {
-            return "value";
-        }
+            var option = _uow.Options.Get(id);
+            if (option == null)
+                return NotFound($"Option with id {id} is not exist");
 
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody]string value)
-        {
-        }
+            var response = new SingleResponse<OptionDTO>();
+            response.Link = Request.GetDisplayUrl();
+            response.Message = Request.Method;
+            response.Message = "This method is under development";
 
-        // PUT api/values/5
+            response.Response = new OptionDTO
+            {
+                OptionId = option.OptionId,
+                Text = option.Text,
+                Order = option.Order,
+                IsDeleted = option.IsDeleted,
+                QuestionId = option.QuestionId
+            };
+
+            return Ok(response);
+        }
+        
+        
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public IActionResult Put(int id, [FromBody]OptionDTO received)
         {
-        }
+            if (_uow.Options.Get(id) == null)
+                return NotFound($"Option with id {id} is not exist");
 
-        // DELETE api/values/5
+            Option optionToUpdate = new Option
+            {
+                OptionId = id,
+                Text = received.Text,
+                Order = received.Order,
+                IsDeleted = received.IsDeleted,
+                QuestionId = received.QuestionId
+            };
+
+            _uow.Options.Update(optionToUpdate);
+            _uow.Save();
+            return Ok("Updated");
+        }
+        
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            if (_uow.Options.Get(id) == null)
+                return NotFound("Option is not found");
+
+            _uow.Options.Delete(id, true);
+            _uow.Save();
+
+            return Ok("Deleted successfully");
+        }
+        [HttpDelete("{id}/soft")]
+        public IActionResult SoftDelete(int id)
+        {
+            if (_uow.Options.Get(id) == null)
+                return NotFound("Option is not found");
+
+            _uow.Options.Delete(id, false);
+            _uow.Save();
+
+            return Ok("Deleted successfully");
+        }
+        [HttpPatch("{id}/restore")]
+        public IActionResult Restore(int id)
+        {
+            if (_uow.Options.Get(id) == null)
+                return NotFound("Option is not found");
+
+            _uow.Options.Restore(id);
+            _uow.Save();
+
+            return Ok("Deleted successfully");
         }
     }
 }

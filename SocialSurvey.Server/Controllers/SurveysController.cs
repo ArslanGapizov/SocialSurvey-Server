@@ -102,7 +102,7 @@ namespace SocialSurvey.Server.Controllers
             };
             return Ok(response);
         }
-
+        
         /// <summary>
         /// Action for adding new survey
         /// </summary>
@@ -110,9 +110,9 @@ namespace SocialSurvey.Server.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] SurveyDTO survey)
         {
-            User currentUser = _uow.Users.Find(x => x.Login == User.Identity.Name).FirstOrDefault();
+            User currentUser = _uow.Users.Find(x => x.Login == User.Identity.Name).SingleOrDefault();
             if (currentUser == null)
-                return Unauthorized();
+                return Unauthorized(); //What??? it's nonsense
 
             Survey entry = new Survey()
             {
@@ -160,7 +160,7 @@ namespace SocialSurvey.Server.Controllers
                 {
                     optionsToUpdate.Add(new Option
                     {
-                        QuestionId = question.QuestionId,
+                        QuestionId = option.QuestionId,
                         OptionId = option.OptionId,
                         Text = option.Text,
                         Order = option.Order,
@@ -186,7 +186,6 @@ namespace SocialSurvey.Server.Controllers
             Survey surveyToUpdate = new Survey
             {
                 SurveyId = id,
-
                 UserId = received.UserId,
                 Name = received.Name,
                 Comment = received.Comment,
