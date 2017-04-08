@@ -22,19 +22,34 @@ namespace SocialSurvey.Domain.Repositories
             _ctx.Options.Add(entity);
         }
 
-        public void Delete(int id, bool hard = true)
+        public void Delete(int id, bool hard = false)
         {
-            Option optionToDelete = Get(id);
-            if (optionToDelete == null)
-                throw new ArgumentOutOfRangeException($"There are no option with id - {id}");
-            optionToDelete.IsDeleted = true;
-            _ctx.Entry(optionToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            var optionToDelete = _ctx.Options.Find(id);
+
+            if (hard)
+            {
+                _ctx.Options.Remove(optionToDelete);
+            }
+            else
+            {
+                optionToDelete.IsDeleted = true;
+                _ctx.Entry(optionToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            }
         }
 
-        public void Delete(Option entity, bool hard = true)
+        public void Delete(Option entity, bool hard = false)
         {
-            entity.IsDeleted = true;
-            _ctx.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            var optionToDelete = _ctx.Options.Find(entity.OptionId);
+
+            if (hard)
+            {
+                _ctx.Options.Remove(optionToDelete);
+            }
+            else
+            {
+                optionToDelete.IsDeleted = true;
+                _ctx.Entry(optionToDelete).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            }
         }
 
         public IEnumerable<Option> Find(Func<Option, bool> predicate)
@@ -54,9 +69,9 @@ namespace SocialSurvey.Domain.Repositories
 
         public void Restore(int id)
         {
-            Option optionToRestore = Get(id);
+            Option optionToRestore = _ctx.Options.Find(id);
             if (optionToRestore == null)
-                throw new ArgumentOutOfRangeException($"There are no option with id - {id}");
+                throw new ArgumentException($"There are no option with id - {id}");
 
             optionToRestore.IsDeleted = false;
             _ctx.Entry(optionToRestore).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
@@ -64,13 +79,25 @@ namespace SocialSurvey.Domain.Repositories
 
         public void Restore(Option entity)
         {
-            entity.IsDeleted = false;
-            _ctx.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            var optionToRestore = _ctx.Options.Find(entity.OptionId);
+            if (optionToRestore == null)
+                throw new ArgumentException($"There is no question with id - {entity.OptionId}");
+
+            optionToRestore.IsDeleted = false;
+            _ctx.Entry(optionToRestore).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
 
         public void Update(Option entity)
         {
-            _ctx.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            var existingOption = _ctx.Options
+                .Where(o => o.OptionId == entity.OptionId)
+                .SingleOrDefault();
+
+            if (existingOption == null)
+                throw new ArgumentException($"There is no option with id {entity.OptionId}");
+
+            //Update option
+            _ctx.Entry(existingOption).CurrentValues.SetValues(entity);
         }
     }
 }

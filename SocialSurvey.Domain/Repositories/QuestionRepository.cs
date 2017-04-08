@@ -20,30 +20,36 @@ namespace SocialSurvey.Domain.Repositories
 
         public void Create(Question entity)
         {
-            _ctx.Questions.Add(entity);
+            _ctx.Add(entity);
         }
 
         public void Delete(int id, bool hard = false)
         {
-            Question questionToDelete = Get(id);
-            if (questionToDelete == null)
-                throw new ArgumentOutOfRangeException($"There are no question with id - {id}");
+            var questionToDelete = _ctx.Questions.Find(id);
 
-            questionToDelete.IsDeleted = true;
-            foreach (var option in questionToDelete.Options)
-                option.IsDeleted = true;
-
-            _ctx.Entry(questionToDelete).State = EntityState.Modified;
+            if (hard)
+            {
+                _ctx.Questions.Remove(questionToDelete);
+            }
+            else
+            {
+                questionToDelete.IsDeleted = true;
+                _ctx.Entry(questionToDelete).State = EntityState.Modified;
+            }
         }
 
         public void Delete(Question entity, bool hard = false)
         {
-            entity.IsDeleted = true;
-            if (entity.Options != null)
-                foreach (var option in entity.Options)
-                    option.IsDeleted = true;
-
-            _ctx.Entry(entity).State = EntityState.Modified;
+            var questionToDelete = _ctx.Questions.Find(entity.QuestionId);
+            if (hard)
+            {
+                _ctx.Questions.Remove(questionToDelete);
+            }
+            else
+            {
+                questionToDelete.IsDeleted = true;
+                _ctx.Entry(questionToDelete).State = EntityState.Modified;
+            }
         }
 
         public IEnumerable<Question> Find(Func<Question, bool> predicate)
@@ -65,30 +71,70 @@ namespace SocialSurvey.Domain.Repositories
 
         public void Restore(int id)
         {
-            Question questionToRestore = Get(id);
+            var questionToRestore = _ctx.Questions.Find(id);
             if (questionToRestore == null)
-                throw new ArgumentOutOfRangeException($"There are no question with id - {id}");
+                throw new ArgumentOutOfRangeException($"There is no question with id - {id}");
 
             questionToRestore.IsDeleted = false;
-            foreach (var option in questionToRestore.Options)
-                option.IsDeleted = false;
             _ctx.Entry(questionToRestore).State = EntityState.Modified;
         }
 
         public void Restore(Question entity)
         {
-            entity.IsDeleted = false;
+            var questionToRestore = _ctx.Questions.Find(entity.QuestionId);
+            if (questionToRestore == null)
+                throw new ArgumentOutOfRangeException($"There is no question with id - {entity.QuestionId}");
 
-            if (entity.Options != null)
-                foreach (var option in entity.Options)
-                    option.IsDeleted = false;
-
-            _ctx.Entry(entity).State = EntityState.Modified;
+            questionToRestore.IsDeleted = false;
+            _ctx.Entry(questionToRestore).State = EntityState.Modified;
         }
 
         public void Update(Question entity)
         {
-            _ctx.Entry(entity).State = EntityState.Modified;
+            var existingQuestion = _ctx.Questions
+                .Where(q => q.QuestionId == entity.QuestionId)
+                .Include(q => q.Options)
+                .SingleOrDefault();
+
+            if (existingQuestion == null)
+                throw new ArgumentException($"There is no question with id {entity.QuestionId}");
+
+            //Update question
+            _ctx.Entry(existingQuestion).CurrentValues.SetValues(entity);
+
+            //Delete options
+            foreach (var existingOption in existingQuestion.Options)
+            {
+                if (!entity.Options
+                    .Any(o => o.OptionId == existingOption.OptionId))
+                    _ctx.Options.Remove(existingOption);
+            }
+
+            var tempOptions = new List<Option>();
+            foreach (var optionEntity in entity.Options)
+            {
+                var existingOption = existingQuestion.Options
+                    .Where(o => o.OptionId == optionEntity.OptionId)
+                    .SingleOrDefault();
+
+                if(existingOption != null)
+                {
+                    //Update option
+                    _ctx.Entry(existingOption).CurrentValues.SetValues(optionEntity);
+                }
+                else
+                {
+                    //Insert option
+                    var newOption = new Option
+                    {
+                        Text = optionEntity.Text,
+                        IsDeleted = optionEntity.IsDeleted,
+                        Order = optionEntity.Order
+                    };
+                    tempOptions.Add(newOption);
+                }
+            }
+            existingQuestion.Options.AddRange(tempOptions);
         }
     }
 }
